@@ -1,10 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
 import { ILoginDTO } from '../dto';
-import { AuthService, IAppleLoginDTO } from '../service';
+import { IAppleLoginDTO, IAuthService } from '../service';
+import { SYMBOL } from '../symbols';
 
 @Controller('/auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(@Inject(SYMBOL.IAuthService) private readonly authService: IAuthService) {}
 
   @Post('/kakao')
 	kakaoLogin() {

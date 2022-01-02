@@ -1,2 +1,3 @@
 export * from './auth.controller';
-export * from './module';
+export * from './root.controller';
+export * from './controller.module';
