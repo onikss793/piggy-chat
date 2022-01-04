@@ -15,3 +15,16 @@ export async function saveUser(user: IUser): Promise<IUser> {
     deletedAt: null
   });
 }
+
+export async function isNicknameUnique(nickname: string): Promise<boolean> {
+  nickname;
+  return Promise.resolve(true);
+}
+
+export async function updateUserNickname(userId: number, nickname: string): Promise<IUser> {
+  console.log('nickname updated');
+  return Promise.resolve({
+    id: userId,
+    nickname
+  } as IUser);
+}

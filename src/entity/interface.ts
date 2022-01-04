@@ -4,7 +4,7 @@ export interface IUser {
 	kakaoAccount?: string;
 	password?: string;
 	phoneNumber?: string;
-	nickName: string;
+	nickname: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 	deletedAt?: Date;
