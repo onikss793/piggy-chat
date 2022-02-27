@@ -1,4 +1,4 @@
 export interface IUserDTO {
-  id: number;
+  id: string;
 	nickname: string;
 }

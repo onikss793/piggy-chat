@@ -4,7 +4,7 @@ import { KakaoUserInfo } from './interface';
 
 @Injectable()
 export class KakaoHandler {
-  async getUserInfoByAccessToken(accessToken: string) {
+  async getUserInfoByAccessToken(accessToken: string): Promise<KakaoUserInfo> {
     const response = await axios.get<KakaoUserInfo>('https://kapi.kakao.com/v2/user/me', {
       headers: { Authorization: `Bearer ${accessToken}`},
       params: {
@@ -12,6 +12,6 @@ export class KakaoHandler {
       }
     });
 
-    return response.data.kakao_account;
+    return response.data;
   }
 }

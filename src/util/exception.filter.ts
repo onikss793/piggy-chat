@@ -8,11 +8,14 @@ export class FailExceptionFilter implements ExceptionFilter {
 		const ctx = host.switchToHttp();
 		const res = ctx.getResponse<Response>();
 
+		const status = exception.getStatus ? exception.getStatus() : 500;
+		const response = exception.getResponse ? exception.getResponse() : { error: 'Internal Server Error', message: exception.message, statusCode: 500 };
+
 		log({
-			...exception.getResponse() as Record<string, unknown>,
+			...response as Record<string, unknown>,
 			stack: exception.stack.split('\n').map(e => e.trim())
 		});
 
-		res.status(exception.getStatus()).json(exception.getResponse());
+		res.status(status).json(response);
 	}
 }

@@ -1,30 +1,22 @@
+import { mongoModels } from '../database';
 import { IUser } from '../entity';
 
 export async function doesUserExist(user: IUser): Promise<boolean> {
-  // findUserWithAccount;
-  console.log(user);
-  return Promise.resolve(false);
+  const existingUser = await mongoModels.User.findOne({ nickname: user.nickname });
+  return !!existingUser;
 }
 
 export async function saveUser(user: IUser): Promise<IUser> {
-  return Promise.resolve({
-    ...user,
-    id: 1,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    deletedAt: null
-  });
+  return mongoModels.User.create({ ...user });
 }
 
 export async function isNicknameUnique(nickname: string): Promise<boolean> {
-  nickname;
-  return Promise.resolve(true);
+  const existingUser = await mongoModels.User.findOne({ nickname });
+  return !existingUser;
 }
 
-export async function updateUserNickname(userId: number, nickname: string): Promise<IUser> {
-  console.log('nickname updated');
-  return Promise.resolve({
-    id: userId,
-    nickname
-  } as IUser);
+export async function updateUserNickname(userId: string, nickname: string): Promise<IUser> {
+  await mongoModels.User.updateOne({ id: userId }, { nickname });
+  console.log('nickname updated', userId);
+  return mongoModels.User.findOne({ id: userId });
 }

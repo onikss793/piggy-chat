@@ -1,18 +1,12 @@
 import { Module } from '@nestjs/common';
-import { UserService } from '.';
 import { ExternalModule } from '../external/external.module';
-import { SYMBOL } from '../symbols';
 import { AuthService } from './auth';
+import { UserService } from './user';
 
 @Module({
-	imports: [ExternalModule],
-	providers: [
-		{ provide: SYMBOL.IAuthService, useClass: AuthService },
-		{ provide: SYMBOL.IUserService, useClass: UserService },
-	],
-	exports: [
-		{ provide: SYMBOL.IAuthService, useClass: AuthService },
-		{ provide: SYMBOL.IUserService, useClass: UserService },
-	]
+  imports: [ExternalModule],
+  providers: [AuthService, UserService],
+  exports: [AuthService, UserService],
 })
-export class ServiceModule {}
+export class ServiceModule {
+}

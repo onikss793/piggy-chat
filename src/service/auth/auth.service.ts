@@ -1,31 +1,33 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AxiosError } from 'axios';
 import * as jwt from 'jsonwebtoken';
-import { IKakaoLoginDTO } from '.';
 import { doesUserExist, saveUser } from '../../dao';
-import { ILoginDTO } from '../../dto';
-import { IUser } from '../../entity';
+import { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../../dto';
+import { IUser, OauthKind } from '../../entity';
 import { AppleHandler, KakaoHandler } from '../../external';
-import { IAppleLoginDTO, IAuthService, IdentityTokenPayload } from './interface';
+import { IdentityTokenPayload } from './interface';
 
 @Injectable()
-export class AuthService implements IAuthService {
+export class AuthService {
   constructor(
     private readonly appleHandler: AppleHandler,
     private readonly kakaoHandler: KakaoHandler,
-  ) {}
+  ) {
+  }
 
   async kakaoLogin(kakaoLoginDTO: IKakaoLoginDTO): Promise<ILoginDTO> {
-    const { token } = kakaoLoginDTO;
-    if (!token) throw new BadRequestException('No access_token provided');
-
-    const kakaoUserInfo = await this.kakaoHandler.getUserInfoByAccessToken(token);
+    const kakaoUserInfo = await this.kakaoHandler.getUserInfoByAccessToken(kakaoLoginDTO.access_token)
+      .catch((err: AxiosError<{ msg: string }>) => {
+        throw new UnauthorizedException(err.response.data.msg);
+      });
 
     const user: IUser = {
-      kakaoAccount: kakaoUserInfo.email,
-      password: null,
+      verified: false,
+      account: kakaoUserInfo.kakao_account.email,
+      oauthKind: OauthKind.KAKAO,
       phoneNumber: null,
-      nickname: kakaoUserInfo.profile?.nickName,
-    }
+      nickname: kakaoUserInfo.kakao_account.profile?.nickName
+    };
 
     const userExists = await doesUserExist(user);
     const jsonwebtoken = userExists ? this.issueJWT(user) : this.issueJWT(await saveUser(user));
@@ -34,21 +36,21 @@ export class AuthService implements IAuthService {
   }
 
   async appleLogin(appleLoginDTO: IAppleLoginDTO): Promise<ILoginDTO> {
-    const { token } = appleLoginDTO;
-    const payload = jwt.decode(token, { complete: true });
-    if (!payload?.header) throw new BadRequestException('Not a valid identity_token');
+    const payload = jwt.decode(appleLoginDTO.identity_token, { complete: true });
+    if (!payload?.header) throw new UnauthorizedException('Not a valid identity_token');
 
     const appleJWKS = await this.appleHandler.getJWKS();
     const { kid } = appleJWKS.find(appleJwks => appleJwks.alg === payload.header.alg && appleJwks.kid === payload.header.kid);
-    if (!kid) throw new BadRequestException('Not a valid identity_token');
+    if (!kid) throw new UnauthorizedException('Not a valid identity_token');
 
     const signingKey = await this.appleHandler.getSigningKey(kid);
-    const identityTokenPayload = jwt.verify(token, signingKey.getPublicKey()) as IdentityTokenPayload;
+    const identityTokenPayload = jwt.verify(appleLoginDTO.identity_token, signingKey.getPublicKey()) as IdentityTokenPayload;
     const account = identityTokenPayload.sub;
 
     const user: IUser = {
-      appleAccount: account,
-      password: null,
+      verified: false,
+      account,
+      oauthKind: OauthKind.APPLE,
       phoneNumber: null,
       nickname: account,
     };
@@ -59,14 +61,10 @@ export class AuthService implements IAuthService {
     return this.createLoginDTO(user, jsonwebtoken);
   }
 
-  private createLoginDTO(user: IUser, jwt: string): ILoginDTO {
-    return {
-      id: user.id,
-      jwt
-    }
-  }
+  private createLoginDTO = (user: IUser, jwt: string): ILoginDTO => ({
+    id: user.id,
+    jwt
+  });
 
-  private issueJWT(user: IUser): string {
-    return jwt.sign(String(user.id), 'secret');
-  }
+  private issueJWT = (user: IUser): string => jwt.sign(String(user.id), 'secret');
 }
