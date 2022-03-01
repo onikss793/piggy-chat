@@ -34,7 +34,7 @@ export function getMongoModels(): IMongoModels {
   };
 }
 
-export async function connectToMongoDB() {
+export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
   const mongoDB = await connect('mongodb://127.0.0.1:27017/piggy_chat');
   mongoModels = getMongoModels();
   return mongoDB;

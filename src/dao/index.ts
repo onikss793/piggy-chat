@@ -1,1 +1,1 @@
-export * from './user.dao';
+export * as UserDAO from './user.dao';

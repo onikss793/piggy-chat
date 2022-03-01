@@ -1,9 +1,16 @@
 import { JwtPayload } from 'jsonwebtoken';
-import { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../../dto';
 
-export interface IAuthService {
-	kakaoLogin(kakaoLoginDTO: IKakaoLoginDTO): Promise<ILoginDTO>;
-  appleLogin(appleLoginDTO: IAppleLoginDTO): Promise<ILoginDTO>;
+export interface ILoginDTO {
+  id: string;
+  jwt: string;
+}
+
+export interface IAppleLoginDTO {
+  identity_token: string;
+}
+
+export interface IKakaoLoginDTO {
+  access_token: string;
 }
 
 export type IdentityTokenPayload = JwtPayload & {

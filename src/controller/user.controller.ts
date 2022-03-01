@@ -1,6 +1,5 @@
 import { Body, ConflictException, Controller, Patch } from '@nestjs/common';
-import { IUserDTO } from '../dto';
-import { UserService } from '../service';
+import { IUserDTO, UserService } from '../service';
 
 @Controller('/user')
 export class UserController {

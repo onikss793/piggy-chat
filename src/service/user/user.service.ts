@@ -1,19 +1,16 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { isNicknameUnique, updateUserNickname } from '../../dao';
-import { IUserDTO } from '../../dto';
+import { UserDAO } from '../../dao';
 import { IUser } from '../../entity';
-import { log } from '../../util';
-import { IUserService } from './interface';
+import { IUserDTO } from './interface';
 
 @Injectable()
-export class UserService implements IUserService {
+export class UserService {
   isUserNicknameUnique(nickname: string): Promise<boolean> {
-    return isNicknameUnique(nickname);
+    return UserDAO.isNicknameUnique(nickname);
   }
 
   async updateUserNickname(userId: string, nickname: string): Promise<IUserDTO> {
-    const updatedUser = await updateUserNickname(userId, nickname);
-    log(updatedUser);
+    const updatedUser = await UserDAO.updateUserNickname(userId, nickname);
     return this.createUserDTO(updatedUser);
   }
 

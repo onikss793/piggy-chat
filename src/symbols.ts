@@ -1,4 +1,4 @@
 export const SYMBOL = {
-	IAuthService: Symbol.for('IAuthService'),
-	IUserService: Symbol.for('IUserService'),
-}
+  IAppleHandler: Symbol.for('IAppleHandler'),
+  IKakaoHandler: Symbol.for('IKakaoHandler'),
+};

@@ -11,6 +11,7 @@ export interface IUser extends IEntity {
   nickname: string;
   phoneNumber?: string;
   verified: boolean;
+  userGroupChannel?: IGroupChannel[];
   /*
    kakaoAccount: 'kakao@kakao.com', nickname: 'test'
    */

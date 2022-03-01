@@ -4,5 +4,9 @@ export interface KakaoUserInfo {
     profile: {
       nickName: string;
     }
-  }
+  };
+}
+
+export interface IKakaoHandler {
+  getUserInfoByAccessToken(accessToken: string): Promise<KakaoUserInfo>;
 }
