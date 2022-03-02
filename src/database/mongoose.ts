@@ -7,7 +7,7 @@ import {
   HotKeywordModel,
   ScrapModel,
   UserGroupChannelModel,
-  UserModel
+  UserModel,
 } from './model';
 
 export let mongoModels: IMongoModels;

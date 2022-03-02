@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose';
+import { FilterQuery, UpdateQuery } from 'mongoose';
 import { mongoModels } from '../database';
 import { IUser } from '../entity';
 
@@ -22,5 +22,10 @@ export async function isNicknameUnique(nickname: string): Promise<boolean> {
 
 export async function updateUserNickname(userId: string, nickname: string): Promise<IUser> {
   await mongoModels.User.updateOne({ id: userId }, { nickname });
+  return mongoModels.User.findOne({ id: userId });
+}
+
+export async function updateUserInfo(userId: string, info: UpdateQuery<IUser>): Promise<IUser> {
+  await mongoModels.User.updateOne({ id: userId }, { ...info });
   return mongoModels.User.findOne({ id: userId });
 }

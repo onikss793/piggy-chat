@@ -50,7 +50,7 @@ export class AuthService {
 
   private createLoginDTO = (user: IUser, jwt: string): ILoginDTO => ({ id: user.id, jwt });
 
-  private issueJWT = (user: IUser): string => jwt.sign(String(user.id), 'secret');
+  private issueJWT = (user: IUser): string => jwt.sign(user.id, process.env.JWT_SECRET ?? 'secret');
 
   private createUserInfo = (account: string, nickname: string, oauthKind: OauthKind): IUser => ({
     verified: false,

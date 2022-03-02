@@ -21,12 +21,10 @@ describe('UserService', () => {
   });
 
   test('isUserNicknameUnique() should return true if it is  not unique', async () => {
-    await setup();
+    await setup('duplicated');
 
     const nickname = 'duplicated';
     const isUnique = await userService.isUserNicknameUnique(nickname);
-
-    await teardown();
 
     expect(isUnique).toEqual(false);
   });
@@ -36,17 +34,31 @@ describe('UserService', () => {
 
     const nickname = 'updated_nickname';
     const updatedUserDTO = await userService.updateUserNickname(user.id, nickname);
-    await teardown();
 
     expect(updatedUserDTO.nickname).toEqual(nickname);
   });
+
+  test('joinGroupChannel() should update userGroupChannel', async () => {
+    const user = await setup();
+
+    const groupChannelUrl = 'GROUP_CHANNEL_URL';
+    const userDTO = await userService.joinGroupChannel(user.id, groupChannelUrl);
+    const updatedUser = await mongoModels.User.findById(user.id);
+
+    expect(userDTO).toEqual(expect.objectContaining({ id: expect.any(String), nickname: 'nickname' }));
+    expect(updatedUser).toEqual(expect.objectContaining({
+      id: user.id,
+      userGroupChannel: [expect.objectContaining({ channelUrl: groupChannelUrl })]
+    }));
+  });
 });
 
-async function setup() {
+async function setup(nickname = 'nickname') {
+  await teardown();
   const user = await mongoModels.User.create({
     account: 'account',
     oauthKind: 'APPLE',
-    nickname: 'duplicated',
+    nickname,
   });
   await user.save();
   return user;

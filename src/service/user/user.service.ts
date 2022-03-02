@@ -9,8 +9,16 @@ export class UserService {
     return UserDAO.isNicknameUnique(nickname);
   }
 
+  async joinGroupChannel(userId: string, groupChannelUrl: string): Promise<IUserDTO> {
+    const user = await UserDAO.findUser({ id: userId });
+    const userGroupChannel = user.userGroupChannel;
+    userGroupChannel.push({ channelUrl: groupChannelUrl });
+    const updatedUser = await UserDAO.updateUserInfo(userId, { userGroupChannel });
+    return this.createUserDTO(updatedUser);
+  }
+
   async updateUserNickname(userId: string, nickname: string): Promise<IUserDTO> {
-    const updatedUser = await UserDAO.updateUserNickname(userId, nickname);
+    const updatedUser = await UserDAO.updateUserInfo(userId, { nickname });
     return this.createUserDTO(updatedUser);
   }
 
