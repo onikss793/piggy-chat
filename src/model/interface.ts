@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongoose';
+
 export interface IEntity {
   id?: string;
   createdAt?: Date;
@@ -7,14 +9,11 @@ export interface IEntity {
 
 export interface IUser extends IEntity {
   account: string;
-  oauthKind: string;
+  oauthKind: OauthKind;
   nickname: string;
   phoneNumber?: string;
   verified: boolean;
-  userGroupChannel?: IGroupChannel[];
-  /*
-   kakaoAccount: 'kakao@kakao.com', nickname: 'test'
-   */
+  currentUserGroupChannelUrl?: string;
 }
 
 export enum OauthKind {
@@ -22,37 +21,29 @@ export enum OauthKind {
   APPLE = 'APPLE',
 }
 
-export interface IGroupChannel extends IEntity {
-  channelUrl: string;
-}
-
 export interface IScrap extends IEntity {
-  userId: string;
-  groupChannelId: string;
+  user: ObjectId;
+  groupChannelId?: string;
   messageId: string;
+  groupChannelUrl: string;
 }
 
 export interface IAlert extends IEntity {
   action: string;
-  userId: string;
-  groupChannelId: string;
+  user: ObjectId;
+  groupChannelUrl: string;
   messageId: string;
   isViewed: boolean;
 }
 
-export interface IUserGroupChannel extends IEntity {
-  userId: string;
-  groupChannelId: string;
-}
-
 export interface IBestChat extends IEntity {
-  groupChannelId: string;
+  groupChannelUrl: string;
   messageId: string;
   likeCount: number;
 }
 
 export interface IHotKeyword extends IEntity {
-  groupChannelId: string;
+  groupChannelUrl: string;
   words: string[];
   from: Date;
   to: Date;

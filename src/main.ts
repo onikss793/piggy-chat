@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import { AppModule } from './app.module';
-import { connectToMongoDB } from './database';
+import { connectToMongoDB } from './mongo';
 
 async function bootstrap() {
   await connectToMongoDB()

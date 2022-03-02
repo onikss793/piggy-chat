@@ -1,12 +1,12 @@
 import { model, Model, Schema } from 'mongoose';
-import { IAlert } from '../../entity';
+import { IAlert } from './interface';
 import { makeSchema } from './makeSchema';
 
-const { String, Boolean } = Schema.Types;
-const schema = makeSchema({
+const { String, Boolean, ObjectId } = Schema.Types;
+const schema = makeSchema<IAlert>({
   action: { type: String, required: true },
-  userId: { type: String, ref: 'User', required: true },
-  groupChannelId: { type: String, ref: 'GroupChannel', required: true },
+  user: { type: ObjectId, ref: 'User', required: true },
+  groupChannelUrl: { type: String, required: false },
   messageId: { type: String, required: true },
   isViewed: { type: Boolean, required: true },
 }, { collection: 'Alert' });

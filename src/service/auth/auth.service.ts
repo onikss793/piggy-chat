@@ -2,8 +2,8 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { UserDAO } from '../../dao';
-import { IUser, OauthKind } from '../../entity';
 import { IAppleHandler, IKakaoHandler } from '../../external';
+import { IUser, OauthKind } from '../../model';
 import { SYMBOL } from '../../symbols';
 import { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from './interface';
 
@@ -46,6 +46,12 @@ export class AuthService {
     const jsonwebtoken = this.issueJWT(user);
 
     return this.createLoginDTO(user, jsonwebtoken);
+  }
+
+  async login(userId: string): Promise<ILoginDTO> {
+    const user = await UserDAO.findUser({ id: userId });
+    const jwt = this.issueJWT(user);
+    return this.createLoginDTO(user, jwt);
   }
 
   private createLoginDTO = (user: IUser, jwt: string): ILoginDTO => ({ id: user.id, jwt });

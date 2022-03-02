@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserDAO } from '../../dao';
-import { IUser } from '../../entity';
+import { IUser } from '../../model';
 import { IUserDTO } from './interface';
 
 @Injectable()
@@ -9,13 +9,13 @@ export class UserService {
     return UserDAO.isNicknameUnique(nickname);
   }
 
-  async joinGroupChannel(userId: string, groupChannelUrl: string): Promise<IUserDTO> {
-    const user = await UserDAO.findUser({ id: userId });
-    const userGroupChannel = user.userGroupChannel;
-    userGroupChannel.push({ channelUrl: groupChannelUrl });
-    const updatedUser = await UserDAO.updateUserInfo(userId, { userGroupChannel });
-    return this.createUserDTO(updatedUser);
-  }
+  // async joinGroupChannel(userId: string, groupChannelUrl: string): Promise<IUserDTO> {
+  //   const user = await UserDAO.findUser({ id: userId });
+  //   const userGroupChannel = user.userGroupChannel;
+  //   userGroupChannel.push({ channelUrl: groupChannelUrl });
+  //   const updatedUser = await UserDAO.updateUserInfo(userId, { userGroupChannel });
+  //   return this.createUserDTO(updatedUser);
+  // }
 
   async updateUserNickname(userId: string, nickname: string): Promise<IUserDTO> {
     const updatedUser = await UserDAO.updateUserInfo(userId, { nickname });

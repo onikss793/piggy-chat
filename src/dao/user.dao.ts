@@ -1,6 +1,6 @@
 import { FilterQuery, UpdateQuery } from 'mongoose';
-import { mongoModels } from '../database';
-import { IUser } from '../entity';
+import { IUser } from '../model';
+import { mongoModels } from '../mongo';
 
 export async function findUser(option: FilterQuery<IUser>): Promise<IUser> {
   return mongoModels.User.findOne({ ...option });

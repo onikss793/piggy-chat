@@ -1,5 +1,6 @@
-import { connectToMongoDB, mongoModels } from '../../database';
 import { MockAppleHandler, MockKakaoHandler } from '../../external';
+import { connectToMongoDB, mongoModels } from '../../mongo';
+import { userTeardown } from '../../test-utils';
 import { AuthService } from './auth.service';
 import { IAppleLoginDTO, IKakaoLoginDTO } from './interface';
 
@@ -20,13 +21,13 @@ describe('AuthService', () => {
   );
 
   test('kakaoLogin() should return loginDTO and create new User', async () => {
-    await teardown();
+    await userTeardown();
 
     const kakaoLoginDTO: IKakaoLoginDTO = { access_token: 'random_string' };
     const loginDTO = await authService.kakaoLogin(kakaoLoginDTO);
     const users = await mongoModels.User.find();
 
-    await teardown();
+    await userTeardown();
 
     expect(loginDTO).toEqual({
       id: expect.any(String),
@@ -43,13 +44,13 @@ describe('AuthService', () => {
   });
 
   test('appleLogin() should return loginDTO and create nwe User', async () => {
-    await teardown();
+    await userTeardown();
 
     const appleLoginDTO: IAppleLoginDTO = { identity_token: 'random_string' };
     const loginDTO = await authService.appleLogin(appleLoginDTO);
     const users = await mongoModels.User.find();
 
-    await teardown();
+    await userTeardown();
 
     expect(loginDTO).toEqual({
       id: expect.any(String),
@@ -65,7 +66,3 @@ describe('AuthService', () => {
     }));
   });
 });
-
-async function teardown() {
-  await mongoModels.User.deleteMany();
-}
