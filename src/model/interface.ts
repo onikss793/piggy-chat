@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongoose';
 
 export interface IEntity {
-  id?: string;
+  id?: ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
@@ -22,7 +22,7 @@ export enum OauthKind {
 }
 
 export interface IScrap extends IEntity {
-  user: ObjectId;
+  user: ObjectId | IUser;
   groupChannelId?: string;
   messageId: string;
   groupChannelUrl: string;
@@ -30,7 +30,7 @@ export interface IScrap extends IEntity {
 
 export interface IAlert extends IEntity {
   action: string;
-  user: ObjectId;
+  user: ObjectId | IUser;
   groupChannelUrl: string;
   messageId: string;
   isViewed: boolean;

@@ -1,26 +1,38 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { ObjectId } from 'mongoose';
+import { IUser } from '../model';
+import { mongoModels } from '../mongo';
 
 @Injectable()
 export class UserGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     try {
-      const request: Request = context.switchToHttp().getRequest();
+      const req: Request & { userId: ObjectId } = context.switchToHttp().getRequest();
 
-      const authorization = request.headers['authorization'];
+      if (process.env.NODE_ENV === 'local' || undefined) {
+        req.userId = (await this.getUserIfLocal()).id;
+        return true;
+      }
+
+      const { authorization } = req.headers;
       if (!authorization) throw new Error('No Authorization in the headers');
 
       const token = authorization?.replace('Bearer ', '');
       if (!token) throw new Error('No Bearer token');
 
-      const payload = jwt.verify(token, process.env.JWT_SECRET ?? 'secret');
-      if (!payload['userId']) throw new Error('No userId in payload');
+      const payload = jwt.verify(token, process.env.JWT_SECRET ?? 'secret') as { userId: ObjectId };
+      if (!payload.userId) throw new Error('No userId in payload');
 
-      request['userId'] = payload['userId'];
+      req.userId = payload.userId;
+
       return true;
     } catch (e) {
       const error = e as Error;
       throw new UnauthorizedException(error.message);
     }
   }
+
+  private getUserIfLocal = async (): Promise<IUser> => (await mongoModels.User.find())[0];
 }

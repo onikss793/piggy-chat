@@ -1,6 +1,7 @@
-import { Body, ConflictException, Controller, Patch, Req, Request, UseGuards } from '@nestjs/common';
-import { IUserDTO, UserService } from '../service';
-import { UserGuard } from '../util';
+import { Body, ConflictException, Controller, Patch, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
+import { IUserDTO, UserService } from '../../service';
+import { UserGuard } from '../../util';
 
 @Controller('/user')
 export class UserController {
@@ -8,7 +9,7 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
-  @Patch('')
+  @Patch('/')
   @UseGuards(UserGuard)
   async updateUserInfo(@Req() req: Request, @Body() body: { nickname: string }): Promise<IUserDTO> {
     const userId = req['userId'];

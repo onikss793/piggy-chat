@@ -1,4 +1,6 @@
+import { ObjectId } from 'mongoose';
+
 export interface IUserDTO {
-  id: string;
+  id: ObjectId;
   nickname: string;
 }

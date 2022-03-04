@@ -1,7 +1,8 @@
 import { JwtPayload } from 'jsonwebtoken';
+import { ObjectId } from 'mongoose';
 
 export interface ILoginDTO {
-  id: string;
+  id: ObjectId;
   jwt: string;
 }
 

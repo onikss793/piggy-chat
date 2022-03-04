@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Req, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { AuthService, IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../service';
-import { UserGuard } from '../util';
+import { AuthService, IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../../service';
+import { UserGuard } from '../../util';
 
 @Controller('/auth')
 export class AuthController {

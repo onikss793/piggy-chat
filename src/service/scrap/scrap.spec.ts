@@ -1,5 +1,5 @@
 import { connectToMongoDB, mongoModels } from '../../mongo';
-import { scrapTeardown, userSetup } from '../../test-utils';
+import { scrapSetup, scrapTeardown, userSetup } from '../../test-utils';
 import { IScrapDataDTO } from './interface';
 import { ScrapService } from './scrap.service';
 
@@ -33,5 +33,22 @@ describe('ScrapService', () => {
       groupChannelUrl: scrapData.groupChannelUrl,
       messageId: scrapData.messageId,
     }));
+  });
+
+  test('getScraps() should return user\'s scraps', async () => {
+    const user = await userSetup();
+    const setupScrap = await scrapSetup(user.id);
+
+    const scraps = await scrapService.getScraps(user.id);
+
+    expect(scraps.length).toEqual(1);
+    expect(scraps[0]).toEqual({
+      user: {
+        id: setupScrap.user.toString(),
+        nickname: user.nickname,
+      },
+      groupChannelUrl: setupScrap.groupChannelUrl,
+      messageId: setupScrap.messageId,
+    });
   });
 });
