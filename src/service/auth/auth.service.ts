@@ -12,8 +12,7 @@ export class AuthService {
   constructor(
     @Inject(SYMBOL.IAppleHandler) private readonly appleHandler: IAppleHandler,
     @Inject(SYMBOL.IKakaoHandler) private readonly kakaoHandler: IKakaoHandler,
-  ) {
-  }
+  ) {}
 
   async kakaoLogin(kakaoLoginDTO: IKakaoLoginDTO): Promise<ILoginDTO> {
     const kakaoUserInfo = await this.kakaoHandler.getUserInfoByAccessToken(kakaoLoginDTO.access_token)

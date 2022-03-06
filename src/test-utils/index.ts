@@ -1,5 +1,6 @@
+import * as dayjs from 'dayjs';
 import { ObjectId } from 'mongoose';
-import { IScrap, IUser } from '../model';
+import { IHotKeyword, IScrap, IUser } from '../model';
 import { mongoModels } from '../mongo';
 
 export async function userSetup(nickname = 'nickname'): Promise<IUser> {
@@ -26,4 +27,18 @@ export async function scrapSetup(userId: ObjectId): Promise<IScrap> {
 
 export async function scrapTeardown(): Promise<void> {
   await mongoModels.Scrap.deleteMany();
+}
+
+export async function hotKeywordSetup(): Promise<IHotKeyword> {
+  await hotKeywordTeardown();
+  return (await mongoModels.HotKeyword.create({
+    groupChannelUrl: 'GROUP_CHANNEL_URL',
+    words: ['HELLO', 'WORLD', 'FOO', 'BAR', 'BAZ'],
+    from: dayjs().startOf('day'),
+    to: dayjs().endOf('day')
+  })).save();
+}
+
+export async function hotKeywordTeardown(): Promise<void> {
+  await mongoModels.HotKeyword.deleteMany();
 }

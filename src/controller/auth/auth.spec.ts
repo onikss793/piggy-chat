@@ -17,7 +17,7 @@ describe('Auth Controller Test', () => {
     await userSetup();
 
     const url = 'http://127.0.0.1:80/auth/login';
-    const { data, status } = await axios.get(url);
+    const { status } = await axios.get(url);
 
     expect(status).toBe(200);
   });
