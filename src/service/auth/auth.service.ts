@@ -4,14 +4,14 @@ import * as jwt from 'jsonwebtoken';
 import { UserDAO } from '../../dao';
 import { IAppleHandler, IKakaoHandler } from '../../external';
 import { IUser, OauthKind } from '../../model';
-import { SYMBOL } from '../../symbols';
+import { Symbols } from '../../symbols';
 import { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from './interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(SYMBOL.IAppleHandler) private readonly appleHandler: IAppleHandler,
-    @Inject(SYMBOL.IKakaoHandler) private readonly kakaoHandler: IKakaoHandler,
+    @Inject(Symbols.IAppleHandler) private readonly appleHandler: IAppleHandler,
+    @Inject(Symbols.IKakaoHandler) private readonly kakaoHandler: IKakaoHandler,
   ) {}
 
   async kakaoLogin(kakaoLoginDTO: IKakaoLoginDTO): Promise<ILoginDTO> {
