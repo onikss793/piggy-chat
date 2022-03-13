@@ -1,6 +1,6 @@
+import { userTeardown } from '../../../test-utils';
 import { MockAppleHandler, MockKakaoHandler } from '../../external';
-import { connectToMongoDB, mongoModels } from '../../mongo';
-import { userTeardown } from '../../test-utils';
+import { connectToMongoDB, models } from '../../mongo';
 import { AuthService } from './auth.service';
 import { IAppleLoginDTO, IKakaoLoginDTO } from './interface';
 
@@ -25,7 +25,7 @@ describe('AuthService', () => {
 
     const kakaoLoginDTO: IKakaoLoginDTO = { access_token: 'random_string' };
     const loginDTO = await authService.kakaoLogin(kakaoLoginDTO);
-    const users = await mongoModels.User.find();
+    const users = await models.User.find();
 
     await userTeardown();
 
@@ -48,7 +48,7 @@ describe('AuthService', () => {
 
     const appleLoginDTO: IAppleLoginDTO = { identity_token: 'random_string' };
     const loginDTO = await authService.appleLogin(appleLoginDTO);
-    const users = await mongoModels.User.find();
+    const users = await models.User.find();
 
     await userTeardown();
 

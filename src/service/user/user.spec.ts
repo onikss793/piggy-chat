@@ -1,5 +1,5 @@
+import { userSetup } from '../../../test-utils';
 import { connectToMongoDB } from '../../mongo';
-import { userSetup } from '../../test-utils';
 import { UserService } from './user.service';
 
 let mongoose: typeof import('mongoose');

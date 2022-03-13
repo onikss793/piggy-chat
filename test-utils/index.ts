@@ -1,11 +1,11 @@
 import * as dayjs from 'dayjs';
 import { ObjectId } from 'mongoose';
-import { IHotKeyword, IScrap, IUser } from '../model';
-import { mongoModels } from '../mongo';
+import { IHotKeyword, IScrap, IUser } from '../src/model';
+import { models } from '../src/mongo';
 
 export async function userSetup(nickname = 'nickname'): Promise<IUser> {
   await userTeardown();
-  return (await mongoModels.User.create({
+  return (await models.User.create({
     account: 'account',
     oauthKind: 'APPLE',
     nickname,
@@ -13,12 +13,12 @@ export async function userSetup(nickname = 'nickname'): Promise<IUser> {
 }
 
 export async function userTeardown(): Promise<void> {
-  await mongoModels.User.deleteMany();
+  await models.User.deleteMany();
 }
 
 export async function scrapSetup(userId: ObjectId): Promise<IScrap> {
   await scrapTeardown();
-  return (await mongoModels.Scrap.create({
+  return (await models.Scrap.create({
     user: userId,
     groupChannelUrl: 'SETUP_GROUP_CHANNEL_URL',
     messageId: 'SETUP_MESSAGE_ID',
@@ -26,12 +26,12 @@ export async function scrapSetup(userId: ObjectId): Promise<IScrap> {
 }
 
 export async function scrapTeardown(): Promise<void> {
-  await mongoModels.Scrap.deleteMany();
+  await models.Scrap.deleteMany();
 }
 
 export async function hotKeywordSetup(): Promise<IHotKeyword> {
   await hotKeywordTeardown();
-  return (await mongoModels.HotKeyword.create({
+  return (await models.HotKeyword.create({
     groupChannelUrl: 'GROUP_CHANNEL_URL',
     words: ['HELLO', 'WORLD', 'FOO', 'BAR', 'BAZ'],
     from: dayjs().startOf('day'),
@@ -40,5 +40,5 @@ export async function hotKeywordSetup(): Promise<IHotKeyword> {
 }
 
 export async function hotKeywordTeardown(): Promise<void> {
-  await mongoModels.HotKeyword.deleteMany();
+  await models.HotKeyword.deleteMany();
 }

@@ -1,5 +1,5 @@
-import { connectToMongoDB, mongoModels } from '../../mongo';
-import { scrapSetup, scrapTeardown, userSetup } from '../../test-utils';
+import { scrapSetup, scrapTeardown, userSetup } from '../../../test-utils';
+import { connectToMongoDB, models } from '../../mongo';
 import { IScrapDataDTO } from './interface';
 import { ScrapService } from './scrap.service';
 
@@ -25,7 +25,7 @@ describe('ScrapService', () => {
       messageId: 'MESSAGE_ID',
     };
     await scrapService.scrap(scrapData);
-    const scraps = await mongoModels.Scrap.find().populate('user');
+    const scraps = await models.Scrap.find().populate('user');
 
     expect(scraps.length).toEqual(1);
     expect(scraps[0]).toEqual(expect.objectContaining({

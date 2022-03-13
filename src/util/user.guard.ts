@@ -3,7 +3,7 @@ import { Request } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { ObjectId } from 'mongoose';
 import { IUser } from '../model';
-import { mongoModels } from '../mongo';
+import { models } from '../mongo';
 
 @Injectable()
 export class UserGuard implements CanActivate {
@@ -34,5 +34,5 @@ export class UserGuard implements CanActivate {
     }
   }
 
-  private getUserIfLocal = async (): Promise<IUser> => (await mongoModels.User.find())[0];
+  private getUserIfLocal = async (): Promise<IUser> => (await models.User.find())[0];
 }

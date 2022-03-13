@@ -1,13 +1,15 @@
 import { IHotKeyword } from '../model';
-import { mongoModels } from '../mongo';
+import { models } from '../mongo';
+
+const { HotKeyword } = models;
 
 export const createHotKeyword = async (hotKeyword: IHotKeyword): Promise<IHotKeyword> => {
-  return (await mongoModels.HotKeyword.create(hotKeyword)).save();
+  return (await HotKeyword.create(hotKeyword)).save();
 };
 
 export const getHotKeywordsFromTo = async (from: Date, to: Date): Promise<IHotKeyword[]> => {
   // TODO: find all of hk.from <= from <= hk.to or hk.from <= to <= hk.to
-  return mongoModels.HotKeyword.find({
+  return HotKeyword.find({
     $or: [
       { from: { $lte: from }, to: { $gte: from } },
       { from: { $lte: to }, to: { $gte: to } },

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Mongoose from 'mongoose';
+import { scrapTeardown, userSetup } from '../../../test-utils';
 import { connectToMongoDB } from '../../mongo';
-import { scrapTeardown, userSetup } from '../../test-utils';
 
 let mongoose: typeof Mongoose;
 

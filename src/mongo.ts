@@ -12,7 +12,7 @@ import {
   UserModel,
 } from './model';
 
-export let mongoModels: IMongoModels;
+export const models: IMongoModels = MongoModels();
 
 export interface IMongoModels {
   Alert: Model<IAlert>;
@@ -22,7 +22,16 @@ export interface IMongoModels {
   User: Model<IUser>;
 }
 
-export function getMongoModels(): IMongoModels {
+export function MongoModels(): IMongoModels {
+  // if (!models) {
+  //   models = {
+  //     Alert: AlertModel(),
+  //     BestChat: BestChatModel(),
+  //     HotKeyword: HotKeywordModel(),
+  //     Scrap: ScrapModel(),
+  //     User: UserModel(),
+  //   };
+  // }
   return {
     Alert: AlertModel(),
     BestChat: BestChatModel(),
@@ -34,6 +43,6 @@ export function getMongoModels(): IMongoModels {
 
 export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
   const mongoDB = await connect(process.env.MONGO_URI ?? 'mongodb://127.0.0.1:27017/piggy_chat');
-  mongoModels = getMongoModels();
+  MongoModels();
   return mongoDB;
 }

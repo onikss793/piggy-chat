@@ -1,6 +1,6 @@
 import * as dayjs from 'dayjs';
-import { connectToMongoDB, mongoModels } from '../../mongo';
-import { hotKeywordSetup, hotKeywordTeardown } from '../../test-utils';
+import { hotKeywordSetup, hotKeywordTeardown } from '../../../test-utils';
+import { connectToMongoDB, models } from '../../mongo';
 import { HotKeywordService } from './hot-keyword.service';
 
 let mongoose: typeof import('mongoose');
@@ -23,7 +23,7 @@ describe('HotKeywordService', () => {
       words: ['HELLO', 'WORLD', 'FOO', 'BAR', 'BAZ'],
     };
     const hotKeywords = await hotKeywordService.createHotKeywords(data);
-    const savedHotKeywords = await mongoModels.HotKeyword.find();
+    const savedHotKeywords = await models.HotKeyword.find();
 
     expect(hotKeywords).toEqual(expect.objectContaining({
       groupChannelUrl: data.groupChannelUrl,

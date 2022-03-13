@@ -1,11 +1,13 @@
 import { ObjectId } from 'mongoose';
 import { IScrap } from '../model';
-import { mongoModels } from '../mongo';
+import { models } from '../mongo';
+
+const { Scrap } = models;
 
 export const getUserScrap = async (userId: ObjectId): Promise<IScrap[]> => {
-  return mongoModels.Scrap.find({ user: userId }).populate('user');
+  return Scrap.find({ user: userId }).populate('user');
 };
 
 export const saveScrap = async (scrap: IScrap): Promise<IScrap> => {
-  return (await mongoModels.Scrap.create(scrap)).save();
+  return (await Scrap.create(scrap)).save();
 };
