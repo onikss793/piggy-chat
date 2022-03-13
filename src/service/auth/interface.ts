@@ -3,7 +3,9 @@ import { ObjectId } from 'mongoose';
 
 export interface ILoginDTO {
   id: ObjectId;
-  jwt: string;
+  accessToken: string;
+  refreshToken: string;
+  isSignedUpUser: boolean;
 }
 
 export interface IAppleLoginDTO {

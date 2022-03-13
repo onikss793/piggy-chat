@@ -3,4 +3,5 @@ export * from './BestChat';
 export * from './HotKeyword';
 export * from './Scrap';
 export * from './User';
+export * from './Session';
 export * from './interface';

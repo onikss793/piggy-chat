@@ -7,6 +7,11 @@ export interface IEntity {
   deletedAt?: Date;
 }
 
+export interface ISession extends IEntity {
+  userId: ObjectId;
+  sessionId: string;
+}
+
 export interface IUser extends IEntity {
   account: string;
   oauthKind: OauthKind;

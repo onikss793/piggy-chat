@@ -9,7 +9,7 @@ beforeAll(async () => {
   mongoose = await connectToMongoDB();
 });
 afterAll(async () => {
-  await mongoose.connection.close();
+  await mongoose?.connection.close();
 });
 
 describe('Auth Controller Test', () => {

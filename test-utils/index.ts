@@ -3,6 +3,10 @@ import { ObjectId } from 'mongoose';
 import { IHotKeyword, IScrap, IUser } from '../src/model';
 import { models } from '../src/mongo';
 
+export async function sessionTeardown(): Promise<void> {
+  await models.Session.deleteMany();
+}
+
 export async function userSetup(nickname = 'nickname'): Promise<IUser> {
   await userTeardown();
   return (await models.User.create({

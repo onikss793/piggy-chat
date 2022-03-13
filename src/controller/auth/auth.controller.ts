@@ -25,6 +25,6 @@ export class AuthController {
   login(@Req() req: Request): Promise<ILoginDTO> {
     const userId: string = req['userId'];
 
-    return this.authService.login(userId);
+    return this.authService.login();
   }
 }

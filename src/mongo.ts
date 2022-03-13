@@ -7,12 +7,29 @@ import {
   IBestChat,
   IHotKeyword,
   IScrap,
+  ISession,
   IUser,
   ScrapModel,
+  SessionModel,
   UserModel,
 } from './model';
 
 export const models: IMongoModels = MongoModels();
+
+export function MongoModels(): IMongoModels {
+  return {
+    Alert: AlertModel(),
+    BestChat: BestChatModel(),
+    HotKeyword: HotKeywordModel(),
+    Scrap: ScrapModel(),
+    User: UserModel(),
+    Session: SessionModel(),
+  };
+}
+
+export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
+  return await connect(process.env.MONGO_URI ?? 'mongodb://127.0.0.1:27017/piggy_chat');
+}
 
 export interface IMongoModels {
   Alert: Model<IAlert>;
@@ -20,29 +37,5 @@ export interface IMongoModels {
   HotKeyword: Model<IHotKeyword>;
   Scrap: Model<IScrap>;
   User: Model<IUser>;
-}
-
-export function MongoModels(): IMongoModels {
-  // if (!models) {
-  //   models = {
-  //     Alert: AlertModel(),
-  //     BestChat: BestChatModel(),
-  //     HotKeyword: HotKeywordModel(),
-  //     Scrap: ScrapModel(),
-  //     User: UserModel(),
-  //   };
-  // }
-  return {
-    Alert: AlertModel(),
-    BestChat: BestChatModel(),
-    HotKeyword: HotKeywordModel(),
-    Scrap: ScrapModel(),
-    User: UserModel(),
-  };
-}
-
-export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
-  const mongoDB = await connect(process.env.MONGO_URI ?? 'mongodb://127.0.0.1:27017/piggy_chat');
-  MongoModels();
-  return mongoDB;
+  Session: Model<ISession>;
 }

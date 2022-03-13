@@ -7,7 +7,7 @@ import { connectToMongoDB } from './mongo';
 
 async function bootstrap() {
   await connectToMongoDB()
-    .then(() => console.log('MongoDB Connected'))
+    .then(mongoose => console.log('MongoDB Connected', mongoose.models))
     .catch(err => {
       throw err;
     });
