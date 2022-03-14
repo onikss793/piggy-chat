@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Post, Req, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UnauthorizedException } from '@nestjs/common';
+import { Request } from 'express';
 import { AuthService, IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../../service';
-import { UserGuard } from '../../util';
 
 @Controller('/auth')
 export class AuthController {
@@ -21,10 +21,12 @@ export class AuthController {
   }
 
   @Get('/login')
-  @UseGuards(UserGuard)
   login(@Req() req: Request): Promise<ILoginDTO> {
-    const userId: string = req['userId'];
+    const authorization = req.headers['authorization'];
+    const accessToken = authorization?.replace('Bearer ', '');
+    const refreshToken = req.headers['refresh-token'] as string;
+    if (!accessToken || !refreshToken) throw new UnauthorizedException('No token');
 
-    return this.authService.login();
+    return this.authService.login(accessToken, refreshToken);
   }
 }

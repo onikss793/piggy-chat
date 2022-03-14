@@ -23,10 +23,11 @@ export class UserGuard implements CanActivate {
       if (!token) throw new Error('No Bearer token');
 
       let payload: { userId: ObjectId };
-      const setPayload = (data: {userId: ObjectId}) => payload = data;
+      const setPayload = (data: { userId: ObjectId }) => payload = data;
       const getPayload = () => payload;
 
       try {
+        // TODO: refactoring
         setPayload(jwt.verify(token, process.env.JWT_SECRET ?? 'secret') as { userId: ObjectId });
       } catch (e) {
         if (e.name === 'TokenExpiredError') {

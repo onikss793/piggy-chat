@@ -51,7 +51,7 @@ export class AuthService {
     return this.createLoginDTO({ user, accessToken, refreshToken, isSignedUpUser: !created });
   }
 
-  async login(accessToken?: string, refreshToken?: string): Promise<ILoginDTO> {
+  async login(accessToken: string, refreshToken: string): Promise<ILoginDTO> {
     try {
       const accessTokenPayload = this.JWTHandler.verifyAccessToken(accessToken);
 
