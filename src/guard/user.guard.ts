@@ -16,27 +16,17 @@ export class UserGuard implements CanActivate {
         return true;
       }
 
-      const { authorization } = req.headers;
+      const authorization = req.get('authorization');
       if (!authorization) throw new Error('No Authorization in the headers');
 
       const token = authorization?.replace('Bearer ', '');
       if (!token) throw new Error('No Bearer token');
 
-      let payload: { userId: ObjectId };
-      const setPayload = (data: { userId: ObjectId }) => payload = data;
-      const getPayload = () => payload;
+      const payload = jwt.verify(token, process.env.JWT_SECRET ?? 'secret') as { userId: ObjectId };
 
-      try {
-        // TODO: refactoring
-        setPayload(jwt.verify(token, process.env.JWT_SECRET ?? 'secret') as { userId: ObjectId });
-      } catch (e) {
-        if (e.name === 'TokenExpiredError') {
-          console.log('Check Refresh token');
-        }
-      }
-      if (!getPayload().userId) throw new Error('No userId in payload');
+      if (!payload.userId) throw new Error('No userId in payload');
 
-      req.userId = getPayload().userId;
+      req.userId = payload.userId;
 
       return true;
     } catch (e) {

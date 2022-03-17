@@ -1,6 +1,6 @@
 import { TokenExpiredError } from 'jsonwebtoken';
 import { mongo } from 'mongoose';
-import { sessionTeardown, userTeardown } from '../../../test-utils';
+import { sessionTeardown, userSetup, userTeardown } from '../../../test-utils';
 import { IAppleHandler, IKakaoHandler, MockAppleHandler, MockKakaoHandler } from '../../external';
 import { IJWTHandler, JWTHandler } from '../../external/jsonwebtoken';
 import { connectToMongoDB, models } from '../../mongo';
@@ -55,7 +55,6 @@ describe('AuthService', () => {
     expect(users[0]).toEqual(expect.objectContaining({
       account: 'test@kakao.com',
       oauthKind: 'KAKAO',
-      nickname: 'test@kakao.com',
       phoneNumber: null,
       verified: false,
     }));
@@ -83,7 +82,6 @@ describe('AuthService', () => {
     expect(users[0]).toEqual(expect.objectContaining({
       account: 'test_sub@apple.com',
       oauthKind: 'APPLE',
-      nickname: 'test_sub@apple.com',
       phoneNumber: null,
       verified: false,
     }));
@@ -143,5 +141,12 @@ describe('AuthService', () => {
     });
     expect(decodeToken).toBeCalledTimes(0);
     expect(verifyRefreshToken).toBeCalledTimes(1);
+  });
+
+  test('isNickNameUnique() should return whether nickname is unique', async () => {
+    const user = await userSetup();
+    const result = await authService.isNicknameUnique(user.nickname);
+
+    expect(result).toBeFalsy();
   });
 });

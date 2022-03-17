@@ -8,9 +8,13 @@ export async function findUser(option: FilterQuery<IUser>): Promise<IUser> {
   return User.findOne({ ...option });
 }
 
-export async function doesUserExist(user: IUser): Promise<boolean> {
-  const existingUser = await User.findOne({ account: user.account, nickname: user.nickname });
+export async function doesAccountExists(account: string): Promise<boolean> {
+  const existingUser = await User.findOne({ account });
   return !!existingUser;
+}
+
+export async function initialSignUpUser(user: Omit<IUser, 'nickname'>): Promise<IUser> {
+  return (await User.create({ ...user })).save();
 }
 
 export async function saveUser(user: IUser): Promise<IUser> {

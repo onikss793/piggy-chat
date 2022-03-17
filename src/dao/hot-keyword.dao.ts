@@ -8,7 +8,6 @@ export const createHotKeyword = async (hotKeyword: IHotKeyword): Promise<IHotKey
 };
 
 export const getHotKeywordsFromTo = async (from: Date, to: Date): Promise<IHotKeyword[]> => {
-  // TODO: find all of hk.from <= from <= hk.to or hk.from <= to <= hk.to
   return HotKeyword.find({
     $or: [
       { from: { $lte: from }, to: { $gte: from } },

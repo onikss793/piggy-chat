@@ -29,4 +29,11 @@ export class AuthController {
 
     return this.authService.login(accessToken, refreshToken);
   }
+
+  @Post('/nickname')
+  async isNicknameUnique(@Body('nickname') nickname: string): Promise<{ isUnique: boolean }> {
+    const isUnique = await this.authService.isNicknameUnique(nickname);
+
+    return { isUnique: isUnique };
+  }
 }

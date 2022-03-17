@@ -21,7 +21,7 @@ export class AuthService {
       .catch((err: AxiosError) => {
         throw new UnauthorizedException(JSON.stringify(err.response.data));
       });
-    const userInfo = this.createUserInfo(kakaoUserInfo.kakao_account.email, kakaoUserInfo.kakao_account.email, OauthKind.KAKAO);
+    const userInfo = this.createUserInfo(kakaoUserInfo.kakao_account.email, OauthKind.KAKAO);
     const { user, created } = await this.createOrGetUser(userInfo);
     const accessToken = this.JWTHandler.issueAccessToken(user);
     const sessionId = this.issueSessionId();
@@ -40,7 +40,7 @@ export class AuthService {
     const identityTokenPayload = this.appleHandler.getIdentityTokenPayload(appleLoginDTO.identity_token, signingKey);
     const account = identityTokenPayload.sub;
 
-    const userInfo = this.createUserInfo(account, account, OauthKind.APPLE);
+    const userInfo = this.createUserInfo(account, OauthKind.APPLE);
     const { user, created } = await this.createOrGetUser(userInfo);
     const accessToken = this.JWTHandler.issueAccessToken(user);
     const sessionId = this.issueSessionId();
@@ -75,6 +75,10 @@ export class AuthService {
     }
   }
 
+  async isNicknameUnique(nickname: string): Promise<boolean> {
+    return UserDAO.isNicknameUnique(nickname);
+  }
+
   private verifyRefreshToken = async (accessToken: string, refreshToken: string) => {
     try {
       const refreshTokenPayload = this.JWTHandler.verifyRefreshToken(refreshToken);
@@ -97,29 +101,39 @@ export class AuthService {
     }
   };
 
-  private createOrGetUser = async (userInfo: IUser): Promise<{ user: IUser, created: boolean }> => {
-    const userExists = await UserDAO.doesUserExist(userInfo);
+  private createOrGetUser = async (userInfo: Omit<IUser, 'nickname'>): Promise<CreateOrGetUserOption> => {
+    const userExists = await UserDAO.doesAccountExists(userInfo.account);
     const user = userExists
       ? await UserDAO.findUser({ account: userInfo.account })
-      : await UserDAO.saveUser(userInfo);
+      : await UserDAO.initialSignUpUser(userInfo);
     return { user, created: !userExists };
   };
 
-  private createLoginDTO = ({
-    user, accessToken, refreshToken, isSignedUpUser
-  }: { user: IUser, accessToken: string, refreshToken: string, isSignedUpUser: boolean }): ILoginDTO => (
+  private createLoginDTO = ({ user, accessToken, refreshToken, isSignedUpUser }: CreateLoginDTOOption): ILoginDTO => (
     { id: user.id, accessToken, refreshToken, isSignedUpUser }
   );
 
-  private createUserInfo = (account: string, nickname: string, oauthKind: OauthKind): IUser => ({
+  private createUserInfo = (account: string, oauthKind: OauthKind): Omit<IUser, 'nickname'> => ({
+    // 최초 가입 시 nickname 은 제외하고 준가입 상태가 된다
     verified: false,
     account,
     oauthKind,
     phoneNumber: null,
-    nickname,
   });
 
   private issueSessionId = (): string => {
-    return randomBytes(5).toString('base64');
+    return randomBytes(4).toString('base64');
   };
+}
+
+type CreateOrGetUserOption = {
+  user: IUser;
+  created: boolean;
+}
+
+type CreateLoginDTOOption = {
+  user: IUser;
+  accessToken: string;
+  refreshToken: string;
+  isSignedUpUser: boolean;
 }
