@@ -46,3 +46,7 @@ export async function hotKeywordSetup(): Promise<IHotKeyword> {
 export async function hotKeywordTeardown(): Promise<void> {
   await models.HotKeyword.deleteMany();
 }
+
+export async function userReactionTeardown(): Promise<void> {
+  await models.UserReaction.deleteMany();
+}

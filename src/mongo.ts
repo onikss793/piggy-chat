@@ -1,17 +1,19 @@
 import { connect, Model } from 'mongoose';
 import {
   AlertModel,
-  BestChatModel,
   HotKeywordModel,
   IAlert,
-  IBestChat,
   IHotKeyword,
+  IReactionStatistics,
   IScrap,
   ISession,
   IUser,
+  IUserReaction,
+  ReactionStatisticsModel,
   ScrapModel,
   SessionModel,
   UserModel,
+  UserReactionModel
 } from './model';
 
 export const models: IMongoModels = MongoModels();
@@ -19,11 +21,12 @@ export const models: IMongoModels = MongoModels();
 export function MongoModels(): IMongoModels {
   return {
     Alert: AlertModel(),
-    BestChat: BestChatModel(),
     HotKeyword: HotKeywordModel(),
     Scrap: ScrapModel(),
     User: UserModel(),
+    UserReaction: UserReactionModel(),
     Session: SessionModel(),
+    ReactionStatistics: ReactionStatisticsModel(),
   };
 }
 
@@ -33,9 +36,10 @@ export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
 
 export interface IMongoModels {
   Alert: Model<IAlert>;
-  BestChat: Model<IBestChat>;
   HotKeyword: Model<IHotKeyword>;
   Scrap: Model<IScrap>;
   User: Model<IUser>;
+  UserReaction: Model<IUserReaction>;
   Session: Model<ISession>;
+  ReactionStatistics: Model<IReactionStatistics>;
 }

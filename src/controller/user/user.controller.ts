@@ -9,6 +9,7 @@ export class UserController {
     private readonly userService: UserService,
   ) {}
 
+  // 사용자 프로필 업데이트(현재는 닉네임만 업데이트)
   @Patch('/')
   @UseGuards(UserGuard)
   async updateUserInfo(@Req() req: Request, @Body() body: { nickname: string }): Promise<IUserDTO> {

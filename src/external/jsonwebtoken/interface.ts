@@ -13,7 +13,7 @@ export interface IJWTHandler {
 
   decodeToken<T>(token): T;
 
-  isTokenExpired(error: Error): boolean;
+  isTokenExpiredError(error: Error): boolean;
 }
 
 export type AccessTokenPayload = {

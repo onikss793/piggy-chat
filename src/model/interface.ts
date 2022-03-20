@@ -1,18 +1,18 @@
 import { ObjectId } from 'mongoose';
 
-export interface IEntity {
+export interface IBaseEntity {
   id?: ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;
 }
 
-export interface ISession extends IEntity {
+export interface ISession extends IBaseEntity {
   userId: ObjectId;
   sessionId: string;
 }
 
-export interface IUser extends IEntity {
+export interface IUser extends IBaseEntity {
   account: string;
   oauthKind: OauthKind;
   nickname: string;
@@ -26,14 +26,14 @@ export enum OauthKind {
   APPLE = 'APPLE',
 }
 
-export interface IScrap extends IEntity {
+export interface IScrap extends IBaseEntity {
   user: ObjectId | IUser;
   groupChannelId?: string;
   messageId: string;
   groupChannelUrl: string;
 }
 
-export interface IAlert extends IEntity {
+export interface IAlert extends IBaseEntity {
   action: string;
   user: ObjectId | IUser;
   groupChannelUrl: string;
@@ -41,13 +41,20 @@ export interface IAlert extends IEntity {
   isViewed: boolean;
 }
 
-export interface IBestChat extends IEntity {
-  groupChannelUrl: string;
-  messageId: string;
-  likeCount: number;
+export type ReactionType = 'LIKE';
+
+export interface IUserReaction extends IBaseEntity {
+  user: ObjectId | IUser;
+  reactions: { messageId: string, reactionType: ReactionType }[];
 }
 
-export interface IHotKeyword extends IEntity {
+export interface IReactionStatistics extends IBaseEntity {
+  groupChannelUrl: string;
+  messageId: string;
+  reactions: { reactionType: ReactionType, totalCount: number };
+}
+
+export interface IHotKeyword extends IBaseEntity {
   groupChannelUrl: string;
   words: string[];
   from: Date;

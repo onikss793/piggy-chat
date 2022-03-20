@@ -35,7 +35,7 @@ export class JWTHandler implements IJWTHandler {
     return jwt.verify(refreshToken, this.secret) as RefreshTokenPayload;
   }
 
-  public isTokenExpired(error: Error): boolean {
+  public isTokenExpiredError(error: Error): boolean {
     return error.name === 'TokenExpiredError';
   }
 

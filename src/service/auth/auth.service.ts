@@ -64,7 +64,7 @@ export class AuthService {
       });
     } catch (e) {
       try {
-        if (this.JWTHandler.isTokenExpired(e)) {
+        if (this.JWTHandler.isTokenExpiredError(e)) {
           return this.verifyRefreshToken(accessToken, refreshToken);
         }
 
