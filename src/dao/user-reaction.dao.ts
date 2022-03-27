@@ -9,8 +9,19 @@ export async function addReaction(userId: ObjectId, messageId: string, reactionT
     $addToSet: {
       reactions: {
         messageId,
-        reactionType
-      }
-    }
+        reactionType,
+      },
+    },
   }, { upsert: true, new: true });
+}
+
+export async function deleteReaction(userId: ObjectId, messageId: string, reactionType: ReactionType): Promise<IUserReaction> {
+  return UserReaction.findOneAndUpdate({ user: userId }, {
+    $pull: {
+      reactions: {
+        messageId,
+        reactionType,
+      },
+    },
+  });
 }

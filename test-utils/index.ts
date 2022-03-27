@@ -1,6 +1,6 @@
 import * as dayjs from 'dayjs';
 import { ObjectId } from 'mongoose';
-import { IHotKeyword, IScrap, IUser } from '../src/model';
+import { IHotKeyword, IScrap, IUser, IUserReaction } from '../src/model';
 import { models } from '../src/mongo';
 
 export async function sessionTeardown(): Promise<void> {
@@ -39,12 +39,24 @@ export async function hotKeywordSetup(): Promise<IHotKeyword> {
     groupChannelUrl: 'GROUP_CHANNEL_URL',
     words: ['HELLO', 'WORLD', 'FOO', 'BAR', 'BAZ'],
     from: dayjs().startOf('day'),
-    to: dayjs().endOf('day')
+    to: dayjs().endOf('day'),
   })).save();
 }
 
 export async function hotKeywordTeardown(): Promise<void> {
   await models.HotKeyword.deleteMany();
+}
+
+export async function userReactionSetup(userId: ObjectId): Promise<IUserReaction> {
+  await userReactionTeardown();
+  return (await models.UserReaction.create({
+    user: userId,
+    reactions: [
+      { messageId: 'message_id_1', reactionType: 'LIKE' },
+      { messageId: 'message_id_2', reactionType: 'LIKE' },
+      { messageId: 'message_id_3', reactionType: 'LIKE' },
+    ],
+  })).save();
 }
 
 export async function userReactionTeardown(): Promise<void> {

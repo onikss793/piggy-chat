@@ -1,5 +1,5 @@
-import { last } from 'lodash';
-import { userReactionTeardown, userSetup } from '../../../test-utils';
+import { first, last } from 'lodash';
+import { userReactionSetup, userReactionTeardown, userSetup } from '../../../test-utils';
 import { connectToMongoDB, MongoModels } from '../../mongo';
 import { ReactionService } from './reaction.service';
 
@@ -26,11 +26,23 @@ describe('ReactionService', () => {
       reactions.push(last(userReaction.reactions));
       expect(userReaction).toEqual({
         userId: String(user.id),
-        reactions
+        reactions,
       });
     }
 
     const result = await MongoModels().UserReaction.find();
     expect(result.length).toBe(1);
+  });
+
+  test('deleteReaction() should pull out userReaction', async () => {
+    const user = await userSetup();
+    const userReaction = await userReactionSetup(user.id);
+
+    const reaction = first(userReaction.reactions);
+    await reactionService.deleteReaction(user.id, reaction.messageId, reaction.reactionType);
+
+    const userReactions = await MongoModels().UserReaction.findOne({ user: user.id });
+    expect(userReactions.reactions.length).toEqual(2);
+    expect(userReactions.reactions.find(r => r.messageId === 'message_id_1')).toBeUndefined();
   });
 });
