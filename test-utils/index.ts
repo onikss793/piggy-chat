@@ -1,6 +1,6 @@
 import * as dayjs from 'dayjs';
 import { ObjectId } from 'mongoose';
-import { IHotKeyword, IScrap, IUser, IUserReaction } from '../src/model';
+import { IHotKeyword, IReactionStatistics, IScrap, IUser, IUserReaction } from '../src/model';
 import { models } from '../src/mongo';
 
 export async function sessionTeardown(): Promise<void> {
@@ -25,7 +25,7 @@ export async function scrapSetup(userId: ObjectId): Promise<IScrap> {
   return (await models.Scrap.create({
     user: userId,
     groupChannelUrl: 'SETUP_GROUP_CHANNEL_URL',
-    messageId: 'SETUP_MESSAGE_ID',
+    messageId: 1,
   })).save();
 }
 
@@ -52,13 +52,27 @@ export async function userReactionSetup(userId: ObjectId): Promise<IUserReaction
   return (await models.UserReaction.create({
     user: userId,
     reactions: [
-      { messageId: 'message_id_1', reactionType: 'LIKE' },
-      { messageId: 'message_id_2', reactionType: 'LIKE' },
-      { messageId: 'message_id_3', reactionType: 'LIKE' },
+      { messageId: 1, reactionType: 'LIKE', groupChannelId: 'group_channel_1' },
+      { messageId: 2, reactionType: 'LIKE', groupChannelId: 'group_channel_1' },
+      { messageId: 3, reactionType: 'LIKE', groupChannelId: 'group_channel_1' },
     ],
   })).save();
 }
 
 export async function userReactionTeardown(): Promise<void> {
   await models.UserReaction.deleteMany();
+}
+
+export async function reactionStatsSetup(groupChannelId: string, messageId: number, reactionType: string, totalCount = 1): Promise<IReactionStatistics> {
+  await reactionStatsTeardown();
+  return (await models.ReactionStatistics.create({
+    groupChannelId,
+    messageId,
+    reactionType,
+    totalCount,
+  })).save();
+}
+
+export async function reactionStatsTeardown(): Promise<void> {
+  await models.ReactionStatistics.deleteMany();
 }

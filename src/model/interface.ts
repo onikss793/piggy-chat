@@ -29,7 +29,7 @@ export enum OauthKind {
 export interface IScrap extends IBaseEntity {
   user: ObjectId | IUser;
   groupChannelId?: string;
-  messageId: string;
+  messageId: number;
   groupChannelUrl: string;
 }
 
@@ -37,7 +37,7 @@ export interface IAlert extends IBaseEntity {
   action: string;
   user: ObjectId | IUser;
   groupChannelUrl: string;
-  messageId: string;
+  messageId: number;
   isViewed: boolean;
 }
 
@@ -45,13 +45,14 @@ export type ReactionType = 'LIKE';
 
 export interface IUserReaction extends IBaseEntity {
   user: ObjectId | IUser;
-  reactions: { messageId: string, reactionType: ReactionType }[];
+  reactions: { groupChannelId: string, messageId: number, reactionType: ReactionType }[];
 }
 
 export interface IReactionStatistics extends IBaseEntity {
-  groupChannelUrl: string;
-  messageId: string;
-  reactions: { reactionType: ReactionType, totalCount: number };
+  groupChannelId: string;
+  messageId: number;
+  reactionType: ReactionType;
+  totalCount: number;
 }
 
 export interface IHotKeyword extends IBaseEntity {

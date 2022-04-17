@@ -2,6 +2,8 @@
 
 ## Best Chat API
 
+_처음에는 어드민에서 임의로 정한다_  
+
 특정 group_channel 안에서 하루 동안 가장 많은 좋아요를 받은 메시지
 
 - 메시지에 좋아요를 누를 때마다 서버에 `message_id : like_count` 갱신

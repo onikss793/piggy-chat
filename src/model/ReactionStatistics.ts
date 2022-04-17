@@ -4,12 +4,10 @@ import { makeSchema } from './makeSchema';
 
 const { String, Number } = Schema.Types;
 const schema = makeSchema<IReactionStatistics>({
-  groupChannelUrl: { type: String, required: true },
-  messageId: { type: String, required: true },
-  reactions: [{
-    reactionType: { type: String, required: true },
-    totalCount: { type: Number, required: true },
-  }]
+  groupChannelId: { type: String, required: true },
+  messageId: { type: Number, required: true },
+  reactionType: { type: String, required: true },
+  totalCount: { type: Number, required: true },
 }, { collection: 'ReactionStatistics' });
 
 export const ReactionStatisticsModel = (): Model<IReactionStatistics> => {

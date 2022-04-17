@@ -20,7 +20,7 @@ describe('Scrap Controller Test', () => {
     const url = 'http://127.0.0.1:80/scrap';
     const { status } = await axios.post(url, {
       groupChannelUrl: 'CONTROLLER_TEST_CHANNEL_ID',
-      messageId: 'CONTROLLER_MESSAGE_ID',
+      messageId: 1,
     });
 
     expect(status).toBe(201);

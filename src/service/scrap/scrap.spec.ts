@@ -22,7 +22,7 @@ describe('ScrapService', () => {
     const scrapData: IScrapDataDTO = {
       userId: user.id,
       groupChannelUrl: 'GROUP_CHANNEL_URL',
-      messageId: 'MESSAGE_ID',
+      messageId: 1,
     };
     await scrapService.scrap(scrapData);
     const scraps = await models.Scrap.find().populate('user');

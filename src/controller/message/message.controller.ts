@@ -7,6 +7,7 @@ import { ReactionService } from '../../service/reaction';
 export class MessageController {
   constructor(private readonly reactionService: ReactionService) {
   }
+
   // 채팅방에서 가장 많은 좋아요를 받은 채팅
   @Get('/best')
   async getBestChat() {
@@ -15,15 +16,15 @@ export class MessageController {
 
   // 리액션 추가
   @Post('/reaction')
-  async addReaction(@Req() req: Request, @Body() body: { messageId: string, reactionType: ReactionType }) {
+  async addReaction(@Req() req: Request, @Body() body: { messageId: number, reactionType: ReactionType, groupChannelId: string }) {
     const userId = req['userId'];
-    return this.reactionService.addReaction(userId, body.messageId, body.reactionType);
+    return this.reactionService.addReaction(userId, body.messageId, body.reactionType, body.groupChannelId);
   }
 
   // 리액션 제거
   @Delete('/reaction')
-  async removeReaction(@Req() req: Request, @Body() body: { messageId: string, reactionType: ReactionType }) {
+  async removeReaction(@Req() req: Request, @Body() body: { messageId: number, reactionType: ReactionType, groupChannelId: string }) {
     const userId = req['userId'];
-    return this.reactionService.deleteReaction(userId, body.messageId, body.reactionType);
+    return this.reactionService.deleteReaction(userId, body.messageId, body.reactionType, body.groupChannelId);
   }
 }

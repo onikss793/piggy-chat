@@ -5,11 +5,11 @@ export interface IScrapDataDTO {
   userId: ObjectId;
   groupChannelId?: string;
   groupChannelUrl: string;
-  messageId: string;
+  messageId: number;
 }
 
 export interface IScrapDTO {
   user: ObjectId | IUserDTO;
   groupChannelUrl: string;
-  messageId: string;
+  messageId: number;
 }

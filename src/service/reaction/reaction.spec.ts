@@ -1,5 +1,6 @@
 import { first, last } from 'lodash';
-import { userReactionSetup, userReactionTeardown, userSetup } from '../../../test-utils';
+import { reactionStatsTeardown, userReactionSetup, userReactionTeardown, userSetup } from '../../../test-utils';
+import { MockSendBirdHandler } from '../../external/send-bird';
 import { connectToMongoDB, MongoModels } from '../../mongo';
 import { ReactionService } from './reaction.service';
 
@@ -13,16 +14,18 @@ afterAll(async () => {
 });
 
 describe('ReactionService', () => {
-  const reactionService = new ReactionService();
+  const reactionService = new ReactionService(new MockSendBirdHandler());
+  const models = MongoModels();
 
   test('addReaction() should return added UserReaction', async () => {
     await userReactionTeardown();
+    await reactionStatsTeardown();
     const user = await userSetup();
-    const messageIds = ['message_id_1', 'message_id_2', 'message_id_3'];
+    const messageIds = [1, 2, 3];
     const reactions = [];
 
     for (const messageId of messageIds) {
-      const userReaction = await reactionService.addReaction(user.id, messageId, 'LIKE');
+      const userReaction = await reactionService.addReaction(user.id, messageId, 'LIKE', 'group_channel_id');
       reactions.push(last(userReaction.reactions));
       expect(userReaction).toEqual({
         userId: String(user.id),
@@ -30,19 +33,41 @@ describe('ReactionService', () => {
       });
     }
 
-    const result = await MongoModels().UserReaction.find();
-    expect(result.length).toBe(1);
+    const userReactions = await models.UserReaction.find();
+    expect(userReactions.length).toBe(1);
+
+    const reactionStats = await models.ReactionStatistics.find();
+    reactionStats.forEach(stat => {
+      expect(stat.totalCount).toEqual(1);
+    });
   });
 
   test('deleteReaction() should pull out userReaction', async () => {
+    await reactionStatsTeardown();
     const user = await userSetup();
     const userReaction = await userReactionSetup(user.id);
 
     const reaction = first(userReaction.reactions);
-    await reactionService.deleteReaction(user.id, reaction.messageId, reaction.reactionType);
+    await reactionService.deleteReaction(user.id, reaction.messageId, reaction.reactionType, reaction.groupChannelId);
 
-    const userReactions = await MongoModels().UserReaction.findOne({ user: user.id });
+    const userReactions = await models.UserReaction.findOne({ user: user.id });
     expect(userReactions.reactions.length).toEqual(2);
-    expect(userReactions.reactions.find(r => r.messageId === 'message_id_1')).toBeUndefined();
+    expect(userReactions.reactions.find(r => r.messageId === 1)).toBeUndefined();
+
+    const reactionStats = await models.ReactionStatistics.find();
+    expect(reactionStats.find(stat => stat.messageId === 1).totalCount).toBe(-1);
   });
+
+  // test('getBestChat() 는 24시간 내 가장 많은 좋아요를 받은 3개의 messageId 를 반환한다', async () => {
+  //   const user = await userSetup();
+  //   const userReaction = await userReactionSetup(user.id);
+  //   await Promise.all(userReaction.reactions.map(async ({ messageId, reactionType, groupChannelId }, i) => {
+  //     await reactionStatsSetup(groupChannelId, messageId, reactionType, i + 1);
+  //   }));
+  //
+  //   const bestChat = await reactionService.getBestChat();
+  //   log(bestChat);
+  //   // const res = await models.ReactionStatistics.find();
+  //   // log(res);
+  // });
 });
