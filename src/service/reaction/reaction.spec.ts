@@ -1,6 +1,7 @@
 import { first, last } from 'lodash';
 import { reactionStatsTeardown, userReactionSetup, userReactionTeardown, userSetup } from '../../../test-utils';
 import { MockSendBirdHandler } from '../../external/send-bird';
+import { ReactionType } from '../../model';
 import { connectToMongoDB, MongoModels } from '../../mongo';
 import { ReactionService } from './reaction.service';
 
@@ -21,11 +22,11 @@ describe('ReactionService', () => {
     await userReactionTeardown();
     await reactionStatsTeardown();
     const user = await userSetup();
-    const messageIds = [1, 2, 3];
+    const messageIds = ['1', '2', '3'];
     const reactions = [];
 
     for (const messageId of messageIds) {
-      const userReaction = await reactionService.addReaction(user.id, messageId, 'LIKE', 'group_channel_id');
+      const userReaction = await reactionService.addReaction(user.id, messageId, ReactionType.LIKE, 'group_channel_id');
       reactions.push(last(userReaction.reactions));
       expect(userReaction).toEqual({
         userId: String(user.id),

@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Req, UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
-import { AuthService, IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../../service';
+import type { Request } from 'express';
+import type { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../../service';
+import { AuthService } from '../../service';
 
 @Controller('/auth')
 export class AuthController {
@@ -9,7 +10,7 @@ export class AuthController {
   // 카카오로 회원가입 및 기가입자 재로그인 시
   @Post('/kakao')
   kakaoLogin(@Body() body: IKakaoLoginDTO): Promise<ILoginDTO> {
-    if (!body.access_token) throw new UnauthorizedException('No access_token provided');
+    if (!body.accessToken) throw new UnauthorizedException('No access_token provided');
 
     return this.authService.kakaoLogin(body);
   }
@@ -17,7 +18,7 @@ export class AuthController {
   // 애플로 회원가입 및 기가입자 재로그인 시
   @Post('/apple')
   appleLogin(@Body() body: IAppleLoginDTO): Promise<ILoginDTO> {
-    if (!body.identity_token) throw new UnauthorizedException('No access_token provided');
+    if (!body.identityToken) throw new UnauthorizedException('No access_token provided');
 
     return this.authService.appleLogin(body);
   }
@@ -33,7 +34,7 @@ export class AuthController {
     return this.authService.login(accessToken, refreshToken);
   }
 
-  // 사용자의 닉네임을 등록하는 API
+  // 사용자의 닉네임을 등록하는 API TODO: 닉네임 등록!
   @Post('/nickname')
   async isNicknameUnique(@Body('nickname') nickname: string): Promise<{ isUnique: boolean }> {
     const isUnique = await this.authService.isNicknameUnique(nickname);

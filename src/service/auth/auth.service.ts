@@ -1,12 +1,11 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 import { randomBytes } from 'crypto';
 import { SessionDAO, UserDAO } from '../../dao';
-import { IAppleHandler, IKakaoHandler } from '../../external';
-import { AccessTokenPayload, IJWTHandler } from '../../external/jsonwebtoken';
+import type { AccessTokenPayload, IAppleHandler, IJWTHandler, IKakaoHandler } from '../../external';
 import { IUser, OauthKind } from '../../model';
 import { Symbols } from '../../symbols';
-import { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from './interface';
+import type { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from './interface';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +16,7 @@ export class AuthService {
   ) {}
 
   async kakaoLogin(kakaoLoginDTO: IKakaoLoginDTO): Promise<ILoginDTO> {
-    const kakaoUserInfo = await this.kakaoHandler.getUserInfoByAccessToken(kakaoLoginDTO.access_token)
+    const kakaoUserInfo = await this.kakaoHandler.getUserInfoByAccessToken(kakaoLoginDTO.accessToken)
       .catch((err: AxiosError) => {
         throw new UnauthorizedException(JSON.stringify(err.response.data));
       });
@@ -33,11 +32,11 @@ export class AuthService {
   }
 
   async appleLogin(appleLoginDTO: IAppleLoginDTO): Promise<ILoginDTO> {
-    const payload = this.appleHandler.getJWTPayload(appleLoginDTO.identity_token);
+    const payload = this.appleHandler.getJWTPayload(appleLoginDTO.identityToken);
     const appleJWKS = await this.appleHandler.getJWKS();
     const kid = this.appleHandler.getKIDFromJWKS(appleJWKS, payload);
     const signingKey = await this.appleHandler.getSigningKey(kid);
-    const identityTokenPayload = this.appleHandler.getIdentityTokenPayload(appleLoginDTO.identity_token, signingKey);
+    const identityTokenPayload = this.appleHandler.getIdentityTokenPayload(appleLoginDTO.identityToken, signingKey);
     const account = identityTokenPayload.sub;
 
     const userInfo = this.createUserInfo(account, OauthKind.APPLE);
@@ -60,7 +59,7 @@ export class AuthService {
         user,
         accessToken: this.JWTHandler.issueAccessToken(user),
         refreshToken: this.JWTHandler.issueRefreshToken(this.issueSessionId()),
-        isSignedUpUser: true
+        isSignedUpUser: true,
       });
     } catch (e) {
       try {
@@ -94,7 +93,7 @@ export class AuthService {
         user,
         accessToken: this.JWTHandler.issueAccessToken(user),
         refreshToken: this.JWTHandler.issueRefreshToken(this.issueSessionId()),
-        isSignedUpUser: true
+        isSignedUpUser: true,
       });
     } catch (e) {
       throw new UnauthorizedException(e);

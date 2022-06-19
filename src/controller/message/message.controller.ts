@@ -1,6 +1,4 @@
-import { Body, Controller, Delete, Get, Post, Req } from '@nestjs/common';
-import { Request } from 'express';
-import { ReactionType } from '../../model';
+import { Controller, Get } from '@nestjs/common';
 import { ReactionService } from '../../service/reaction';
 
 @Controller('/message')
@@ -12,19 +10,5 @@ export class MessageController {
   @Get('/best')
   async getBestChat() {
     return;
-  }
-
-  // 리액션 추가
-  @Post('/reaction')
-  async addReaction(@Req() req: Request, @Body() body: { messageId: number, reactionType: ReactionType, groupChannelId: string }) {
-    const userId = req['userId'];
-    return this.reactionService.addReaction(userId, body.messageId, body.reactionType, body.groupChannelId);
-  }
-
-  // 리액션 제거
-  @Delete('/reaction')
-  async removeReaction(@Req() req: Request, @Body() body: { messageId: number, reactionType: ReactionType, groupChannelId: string }) {
-    const userId = req['userId'];
-    return this.reactionService.deleteReaction(userId, body.messageId, body.reactionType, body.groupChannelId);
   }
 }

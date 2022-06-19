@@ -9,11 +9,11 @@ export interface ILoginDTO {
 }
 
 export interface IAppleLoginDTO {
-  identity_token: string;
+  identityToken: string;
 }
 
 export interface IKakaoLoginDTO {
-  access_token: string;
+  accessToken: string;
 }
 
 export type IdentityTokenPayload = JwtPayload & {

@@ -1,18 +1,44 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { IMessageListResponse, IMessageResponse, ISendBirdHandler } from './interface';
+import { BinaryLike, createHmac } from 'crypto';
+import type { ICustomData, IMessage, IMessageListResponse, ISendBirdHandler } from './interface';
+import { IThreadedMessageResponse, WebhookCategory } from './interface';
 
 @Injectable()
 export class SendBirdHandler implements ISendBirdHandler {
-  private readonly applicationId: string;
+  private readonly APPLICATION_ID: string;
+  private readonly API_TOKEN: string;
+  private readonly URL: string;
 
   constructor() {
-    this.applicationId = process.env.SEND_BIRD_APP_ID;
+    this.APPLICATION_ID = process.env.SEND_BIRD_APP_ID;
+    this.API_TOKEN = process.env.SEND_BIRD_API_TOKEN;
+    this.URL = `https://api-${this.APPLICATION_ID}.sendbird.com/v3`;
+  }
+
+  async getThreadedMessages(
+    parentMessageId: number,
+    messageTs: number,
+    channelUrl: string,
+    channelType = 'group_channels',
+  ): Promise<IThreadedMessageResponse> {
+    try {
+      const url = `${this.URL}/${channelType}/${channelUrl}/messages/`;
+      const params = {
+        parent_message_id: parentMessageId,
+        message_ts: messageTs,
+      };
+      const { data } = await axios.get<IThreadedMessageResponse>(url, { params });
+      console.info(JSON.stringify(data) + 'GetThreadedMessages');
+      return data;
+    } catch (e) {
+      console.info(JSON.stringify(e));
+    }
   }
 
   async getMessageList(channelUrl: string, messageTs: number, channelType = 'group_channels'): Promise<IMessageListResponse> {
     try {
-      const url = `https://api-${this.applicationId}.sendbird.com/v3/${channelType}/${channelUrl}/messages`;
+      const url = `${this.URL}/${channelType}/${channelUrl}/messages`;
       const { data } = await axios.get<IMessageListResponse>(url, {
         params: {
           message_ts: messageTs,
@@ -24,12 +50,29 @@ export class SendBirdHandler implements ISendBirdHandler {
       console.info(JSON.stringify(e));
     }
   }
+
+  verifyWebhook(body: BinaryLike, signature: string): boolean {
+    const hash = createHmac('sha256', this.API_TOKEN).update(body).digest('hex');
+    return signature === hash;
+  }
+
+  classifyWebhook(category: string): WebhookCategory {
+    switch (category) {
+      case 'group_channel:reaction_add':
+        return WebhookCategory.REACTION_ADD;
+      case 'group_channel:message_send':
+        return WebhookCategory.MESSAGE_SEND;
+    }
+  }
+
+  parseCustomData(data: string): ICustomData {
+    return JSON.parse(data) as ICustomData;
+  }
 }
 
 export class MockSendBirdHandler implements ISendBirdHandler {
-
   getMessageList(): Promise<IMessageListResponse> {
-    const mock: IMessageResponse = {
+    const mock: IMessage = {
       message_id: 1,
       type: null,
       custom_type: null,
@@ -86,4 +129,17 @@ export class MockSendBirdHandler implements ISendBirdHandler {
       ],
     });
   }
+  verifyWebhook(body: BinaryLike, signature: string): boolean {
+    return false;
+  }
+  classifyWebhook(category: string): WebhookCategory {
+    return undefined;
+  }
+  parseCustomData(data: string): ICustomData {
+    return undefined;
+  }
+  getThreadedMessages(parentMessageId: number, messageTs: number, channelUrl: string, channelType?: string): Promise<IThreadedMessageResponse> {
+    return Promise.resolve(undefined);
+  }
+
 }

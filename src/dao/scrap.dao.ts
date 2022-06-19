@@ -1,5 +1,5 @@
-import { ObjectId } from 'mongoose';
-import { IScrap } from '../model';
+import type { ObjectId } from 'mongoose';
+import type { IScrap } from '../model';
 import { models } from '../mongo';
 
 const { Scrap } = models;

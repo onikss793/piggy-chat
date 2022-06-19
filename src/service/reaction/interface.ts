@@ -7,3 +7,9 @@ export interface IAddReactionDTO {
     reactionType: ReactionType
   }[];
 }
+
+export interface IBestChatDTO {
+  messageId: number;
+  likeCount: number;
+  groupChannelId: string;
+}

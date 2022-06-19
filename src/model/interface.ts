@@ -34,14 +34,18 @@ export interface IScrap extends IBaseEntity {
 }
 
 export interface IAlert extends IBaseEntity {
+  alertTo: ObjectId | IUser;
   action: string;
-  user: ObjectId | IUser;
+  from: ObjectId | IUser;
+  to: ObjectId | IUser;
   groupChannelUrl: string;
   messageId: number;
   isViewed: boolean;
 }
 
-export type ReactionType = 'LIKE';
+export enum ReactionType {
+  LIKE = 'LIKE'
+}
 
 export interface IUserReaction extends IBaseEntity {
   user: ObjectId | IUser;

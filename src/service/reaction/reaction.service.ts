@@ -3,9 +3,9 @@ import * as dayjs from 'dayjs';
 import { ObjectId } from 'mongoose';
 import { ReactionStatisticDAO, UserReactionDAO } from '../../dao';
 import { ISendBirdHandler } from '../../external/send-bird';
-import { IUserReaction, ReactionType } from '../../model';
+import { IReactionStatistics, IUserReaction, ReactionType } from '../../model';
 import { Symbols } from '../../symbols';
-import { IAddReactionDTO } from './interface';
+import { IAddReactionDTO, IBestChatDTO } from './interface';
 
 @Injectable()
 export class ReactionService {
@@ -37,13 +37,13 @@ export class ReactionService {
     }));
   }
 
-  async addReaction(userId: ObjectId, messageId: number, reactionType: ReactionType, groupChannelId: string): Promise<IAddReactionDTO> {
+  async addReaction(userId: ObjectId, messageId: string, reactionType: ReactionType, groupChannelId: string): Promise<IAddReactionDTO> {
     const userReaction = await UserReactionDAO.addReaction(userId, messageId, reactionType, groupChannelId);
     await ReactionStatisticDAO.upsertReactionStats(groupChannelId, messageId, reactionType);
     return this.addReactionDTO(userReaction);
   }
 
-  async deleteReaction(userId: ObjectId, messageId: number, reactionType: ReactionType, groupChannelId: string): Promise<void> {
+  async deleteReaction(userId: ObjectId, messageId: string, reactionType: ReactionType, groupChannelId: string): Promise<void> {
     const userReaction = await UserReactionDAO.deleteReaction(userId, messageId, reactionType, groupChannelId);
     await ReactionStatisticDAO.decreaseReactionStats(groupChannelId, messageId, reactionType);
     return this.deleteReactionDTO(userReaction);
@@ -53,6 +53,14 @@ export class ReactionService {
     return {
       userId: String(userReaction.user),
       reactions: userReaction.reactions.map(r => ({ messageId: r.messageId, reactionType: r.reactionType })),
+    };
+  };
+
+  private bestChatDTO = (reactionStats: IReactionStatistics): IBestChatDTO => {
+    return {
+      messageId: reactionStats.messageId,
+      likeCount: reactionStats.totalCount,
+      groupChannelId: reactionStats.groupChannelId,
     };
   };
 

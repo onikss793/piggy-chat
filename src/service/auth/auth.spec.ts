@@ -34,7 +34,7 @@ describe('AuthService', () => {
   });
 
   test('kakaoLogin() should return loginDTO and create new User', async () => {
-    const kakaoLoginDTO: IKakaoLoginDTO = { access_token: 'random_string' };
+    const kakaoLoginDTO: IKakaoLoginDTO = { accessToken: 'random_string' };
     const loginDTO = await authService.kakaoLogin(kakaoLoginDTO);
     const users = await models.User.find();
     const sessions = await models.Session.find();
@@ -61,7 +61,7 @@ describe('AuthService', () => {
   });
 
   test('appleLogin() should return loginDTO and create nwe User', async () => {
-    const appleLoginDTO: IAppleLoginDTO = { identity_token: 'random_string' };
+    const appleLoginDTO: IAppleLoginDTO = { identityToken: 'random_string' };
     const loginDTO = await authService.appleLogin(appleLoginDTO);
     const users = await models.User.find();
     const sessions = await models.Session.find();
@@ -88,7 +88,7 @@ describe('AuthService', () => {
   });
 
   test('login() should return loginDTO', async () => {
-    const kakaoLoginDTO: IKakaoLoginDTO = { access_token: 'random_string' };
+    const kakaoLoginDTO: IKakaoLoginDTO = { accessToken: 'random_string' };
     const { accessToken, refreshToken } = await authService.kakaoLogin(kakaoLoginDTO);
 
     const loginDTO = await authService.login(accessToken, refreshToken);
@@ -101,7 +101,7 @@ describe('AuthService', () => {
   });
 
   test('login() should return loginDTO when access_token is expired', async () => {
-    const kakaoLoginDTO: IKakaoLoginDTO = { access_token: 'random_string' };
+    const kakaoLoginDTO: IKakaoLoginDTO = { accessToken: 'random_string' };
     const { accessToken, refreshToken } = await authService.kakaoLogin(kakaoLoginDTO);
 
     jest.spyOn(jwtHandler, 'verifyAccessToken').mockImplementation(() => {
@@ -124,7 +124,7 @@ describe('AuthService', () => {
   test('login() should throw UnauthorizedException when refresh_token is expired', async () => {
     expect.assertions(3);
 
-    const kakaoLoginDTO: IKakaoLoginDTO = { access_token: 'random_string' };
+    const kakaoLoginDTO: IKakaoLoginDTO = { accessToken: 'random_string' };
     const { accessToken, refreshToken } = await authService.kakaoLogin(kakaoLoginDTO);
 
     jest.spyOn(jwtHandler, 'verifyAccessToken').mockImplementation(() => {
