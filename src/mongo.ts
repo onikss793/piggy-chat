@@ -1,19 +1,13 @@
 import { connect, Model } from 'mongoose';
+import type { IAlert, IHotKeyword, IReactionStatistics, IScrap, ISession, IUser, IUserReaction } from './model';
 import {
   AlertModel,
   HotKeywordModel,
-  IAlert,
-  IHotKeyword,
-  IReactionStatistics,
-  IScrap,
-  ISession,
-  IUser,
-  IUserReaction,
   ReactionStatisticsModel,
   ScrapModel,
   SessionModel,
   UserModel,
-  UserReactionModel
+  UserReactionModel,
 } from './model';
 
 export const models: IMongoModels = MongoModels();
@@ -31,7 +25,14 @@ export function MongoModels(): IMongoModels {
 }
 
 export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
-  return await connect(process.env.MONGO_URI ?? 'mongodb://127.0.0.1:27017/piggy_chat');
+  const username = process.env.MONGO_USERNAME;
+  const password = encodeURIComponent(process.env.MONGO_PASSWORD);
+  const cluster = process.env.MONGO_CLUSTER;
+  const uri = ['local', 'nest'].includes(process.env.STAGE)
+    ? 'mongodb://127.0.0.1:27017/piggy_chat'
+    : `mongodb+srv://${username}:${password}@${cluster}.x82dl.mongodb.net/?retryWrites=true&w=majority`;
+
+  return connect(uri);
 }
 
 export interface IMongoModels {

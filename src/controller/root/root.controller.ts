@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 
-@Controller('/')
+@Controller('/root')
 export class RootController {
 	@Get()
 	root(): HttpStatus {

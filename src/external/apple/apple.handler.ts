@@ -2,8 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
 import * as jwt from 'jsonwebtoken';
 import JwksRsa, * as jwksClient from 'jwks-rsa';
-import { IdentityTokenPayload } from '../../service';
-import { AppleJWKS, IAppleHandler } from './interface';
+import type { IdentityTokenPayload } from '../../service';
+import type { AppleJWKS, IAppleHandler } from './interface';
 
 @Injectable()
 export class AppleHandler implements IAppleHandler {

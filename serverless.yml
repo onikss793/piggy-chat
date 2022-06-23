@@ -1,0 +1,42 @@
+service: piggy-chat
+
+app: piggy-chat
+
+plugins:
+  - serverless-offline
+
+provider:
+  lambdaHashingVersion: '20201221'
+  name: aws
+  runtime: nodejs14.x
+  memorySize: 256
+  stage: ${env:STAGE}
+  region: ap-northeast-2
+  apiName: piggy-chat-api
+  timeout: 300
+  environment: ${file(env.js)}
+
+functions:
+  api:
+    handler: out/lambda.handler
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+
+package:
+  patterns:
+    - out/lambda.js
+    - '!node_modules/**'
+    - '!_script'
+    - '!dist'
+    - '!src'
+    - '!test'
+    - '!*.json'
+    - '!*.js'
+    - '!*.md'
+
+custom:
+  serverless-offline:
+    httpPort: 8080
+    noPrependStageInUrl: true

@@ -5,13 +5,7 @@ import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 import { connectToMongoDB } from './mongo';
 
-async function bootstrap() {
-  await connectToMongoDB()
-    .then(mongoose => console.log('MongoDB Connected', mongoose.models))
-    .catch(err => {
-      throw err;
-    });
-
+export const getApp = async () => {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
@@ -21,12 +15,24 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
-    })
+    }),
   );
+
+  return app;
+};
+
+async function bootstrap() {
+  await connectToMongoDB()
+    .then(mongoose => console.log('MongoDB Connected', mongoose.models))
+    .catch(err => {
+      throw err;
+    });
+
+  const app = await getApp();
 
   const PORT = 80;
   await app.listen(PORT)
     .then(() => console.log('Server listening to port: ' + PORT));
 }
 
-void bootstrap();
+process.env.STAGE === 'local' && void bootstrap();

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, Req } from '@nestjs/common';
 import type { Request } from 'express';
 import type { IAppleLoginDTO, IKakaoLoginDTO, ILoginDTO } from '../../service';
 import { AuthService } from '../../service';
@@ -10,7 +10,7 @@ export class AuthController {
   // 카카오로 회원가입 및 기가입자 재로그인 시
   @Post('/kakao')
   kakaoLogin(@Body() body: IKakaoLoginDTO): Promise<ILoginDTO> {
-    if (!body.accessToken) throw new UnauthorizedException('No access_token provided');
+    if (!body.accessToken) throw new BadRequestException('No access_token provided');
 
     return this.authService.kakaoLogin(body);
   }
@@ -18,7 +18,7 @@ export class AuthController {
   // 애플로 회원가입 및 기가입자 재로그인 시
   @Post('/apple')
   appleLogin(@Body() body: IAppleLoginDTO): Promise<ILoginDTO> {
-    if (!body.identityToken) throw new UnauthorizedException('No access_token provided');
+    if (!body.identityToken) throw new BadRequestException('No identityToken provided');
 
     return this.authService.appleLogin(body);
   }
@@ -29,7 +29,7 @@ export class AuthController {
     const authorization = req.headers['authorization'];
     const accessToken = authorization?.replace('Bearer ', '');
     const refreshToken = req.headers['refresh-token'] as string;
-    if (!accessToken || !refreshToken) throw new UnauthorizedException('No token');
+    if (!accessToken || !refreshToken) throw new BadRequestException('No token');
 
     return this.authService.login(accessToken, refreshToken);
   }
