@@ -35,4 +35,4 @@ async function bootstrap() {
     .then(() => console.log('Server listening to port: ' + PORT));
 }
 
-process.env.STAGE === 'local' && void bootstrap();
+process.env.NODE_ENV === 'local' && void bootstrap();

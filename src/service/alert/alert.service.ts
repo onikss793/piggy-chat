@@ -1,20 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { ObjectId } from 'mongoose';
-import { isNil, when } from 'ramda';
-import { AlertDAO } from '../../dao';
-import { AlertActionType, ISendBirdHandler } from '../../external/send-bird';
-import { IAlert } from '../../model';
+import type { ISendBirdHandler } from '../../external';
 import { Symbols } from '../../symbols';
-
-interface IMessageSend {
-  actionType: AlertActionType;
-  parentUserId: string;
-  parentMessageId: number;
-  targetUserId: string;
-  groupChannelUrl: string;
-  messageId: number;
-  ts: number;
-}
+import { IMessageSend } from './interface';
 
 @Injectable()
 export class AlertService {
@@ -33,42 +20,24 @@ export class AlertService {
     // 멘션 시 알림
     // - ***님이 답글을 남겼습니다 : 원문
 
-    const alertToTargetUser = async () => {
-      const data: IAlert = {
-        alertTo: <unknown>targetUserId as ObjectId,
-        action: actionType,
-        from: <unknown>parentUserId as ObjectId,
-        to: <unknown>targetUserId as ObjectId,
-        groupChannelUrl,
-        messageId,
-        isViewed: false,
-      };
-      await AlertDAO.saveAlert(data);
-    };
+    // cond<IMessageSend>([
+    //   [() => !isNil(parentMessageId), alertUsersInThread({
+    //     actionType,
+    //     parentMessageId,
+    //     targetUserId,
+    //     parentUserId,
+    //     groupChannelUrl,
+    //     messageId,
+    //   }, this.sendbirdHandler)],
+    // ]);
+    //
+    // const saveAlertsInThread = when(
+    //   (data: IMessageSend) => !isNil(data.parentMessageId),
+    //   alertUsersInThread,
+    //   ({ actionType, parentMessageId, targetUserId, parentUserId, groupChannelUrl, messageId }, this.sendbirdHandler)
+    // );
 
-    const alertUsersInThread = async () => {
-      const { messages: threadedMessages } = await this.sendbirdHandler.getThreadedMessages(parentMessageId, ts, groupChannelUrl);
-      const usersInThread = threadedMessages
-        .map(msg => msg.user.user_id)
-        .map(userId => {
-          return {
-            alertTo: <unknown>userId as ObjectId,
-            action: actionType,
-            from: <unknown>parentUserId as ObjectId,
-            to: <unknown>targetUserId as ObjectId,
-            groupChannelUrl,
-            messageId,
-            isViewed: false,
-          };
-        });
-      await AlertDAO.saveAlerts(usersInThread);
-    };
-    const saveAlertsInThread = when(
-      (parentMessageId: number) => !isNil(parentMessageId),
-      alertUsersInThread,
-    );
-
-    await Promise.all([alertToTargetUser, saveAlertsInThread]);
+    // await Promise.all([alertToTargetUser, saveAlertsInThread]);
   }
 
   reactionAdd() {

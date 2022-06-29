@@ -6,12 +6,15 @@ import { IKakaoHandler, KakaoUserInfo } from './interface';
 export class KakaoHandler implements IKakaoHandler {
   async getUserInfoByAccessToken(accessToken: string): Promise<KakaoUserInfo> {
     const response = await axios.get<KakaoUserInfo>('https://kapi.kakao.com/v2/user/me', {
-      headers: { Authorization: `Bearer ${accessToken}` },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-type': 'application/x-www-form-urlencoded',
+      },
       params: {
-        property_keys: ['properties.nickname', 'kakao_account.name', 'kakao_account.email']
-      }
+        property_keys: ['properties.nickname', 'kakao_account.name', 'kakao_account.email'],
+      },
     });
-
+    console.log(response, 'getUserInfoByAccessToken');
     return response.data;
   }
 }
@@ -23,9 +26,9 @@ export class MockKakaoHandler implements IKakaoHandler {
       kakao_account: {
         email: 'test@kakao.com',
         profile: {
-          nickName: 'testing_nickname'
-        }
-      }
+          nickName: 'testing_nickname',
+        },
+      },
     });
   }
 }

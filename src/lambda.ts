@@ -13,6 +13,7 @@ async function connect(): Promise<typeof import('mongoose')> {
       return mongoose;
     })
     .catch(err => {
+      console.error('MongoDB Error: ', err);
       throw err;
     });
 }

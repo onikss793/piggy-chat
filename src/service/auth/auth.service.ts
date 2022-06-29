@@ -18,7 +18,7 @@ export class AuthService {
   async kakaoLogin(kakaoLoginDTO: IKakaoLoginDTO): Promise<ILoginDTO> {
     const kakaoUserInfo = await this.kakaoHandler.getUserInfoByAccessToken(kakaoLoginDTO.accessToken)
       .catch((err: AxiosError) => {
-        throw new UnauthorizedException(JSON.stringify(err.response.data));
+        throw new UnauthorizedException(err);
       });
     const userInfo = this.createUserInfo(kakaoUserInfo.kakao_account.email, OauthKind.KAKAO);
     const { user, created } = await this.createOrGetUser(userInfo);
