@@ -1,5 +1,5 @@
-import { FilterQuery, ObjectId, UpdateQuery } from 'mongoose';
-import { IUser } from '../model';
+import type { FilterQuery, ObjectId, UpdateQuery } from 'mongoose';
+import type { IUser } from '../model';
 import { models } from '../mongo';
 
 const { User } = models;

@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as dayjs from 'dayjs';
-import { ObjectId } from 'mongoose';
+import type { ObjectId } from 'mongoose';
 import { ReactionStatisticDAO, UserReactionDAO } from '../../dao';
-import { ISendBirdHandler } from '../../external/send-bird';
-import { IReactionStatistics, IUserReaction, ReactionType } from '../../model';
+import type { ISendBirdHandler } from '../../external';
+import type { IReactionStatistics, IUserReaction, ReactionType } from '../../model';
 import { Symbols } from '../../symbols';
-import { IAddReactionDTO, IBestChatDTO } from './interface';
+import type { AddReactionResponse, BestChatResponse } from './interface';
 
 @Injectable()
 export class ReactionService {
@@ -37,26 +37,26 @@ export class ReactionService {
     }));
   }
 
-  async addReaction(userId: ObjectId, messageId: string, reactionType: ReactionType, groupChannelId: string): Promise<IAddReactionDTO> {
+  async addReaction(userId: ObjectId, messageId: number, reactionType: ReactionType, groupChannelId: string): Promise<AddReactionResponse> {
     const userReaction = await UserReactionDAO.addReaction(userId, messageId, reactionType, groupChannelId);
     await ReactionStatisticDAO.upsertReactionStats(groupChannelId, messageId, reactionType);
-    return this.addReactionDTO(userReaction);
+    return this.createAddReactionResponse(userReaction);
   }
 
-  async deleteReaction(userId: ObjectId, messageId: string, reactionType: ReactionType, groupChannelId: string): Promise<void> {
+  async deleteReaction(userId: ObjectId, messageId: number, reactionType: ReactionType, groupChannelId: string): Promise<void> {
     const userReaction = await UserReactionDAO.deleteReaction(userId, messageId, reactionType, groupChannelId);
     await ReactionStatisticDAO.decreaseReactionStats(groupChannelId, messageId, reactionType);
-    return this.deleteReactionDTO(userReaction);
+    return this.createDeleteReactionResponse(userReaction);
   }
 
-  private addReactionDTO = (userReaction: IUserReaction): IAddReactionDTO => {
+  private createAddReactionResponse = (userReaction: IUserReaction): AddReactionResponse => {
     return {
       userId: String(userReaction.user),
       reactions: userReaction.reactions.map(r => ({ messageId: r.messageId, reactionType: r.reactionType })),
     };
   };
 
-  private bestChatDTO = (reactionStats: IReactionStatistics): IBestChatDTO => {
+  private createBestChatResponse = (reactionStats: IReactionStatistics): BestChatResponse => {
     return {
       messageId: reactionStats.messageId,
       likeCount: reactionStats.totalCount,
@@ -64,7 +64,7 @@ export class ReactionService {
     };
   };
 
-  private deleteReactionDTO = (userReaction: IUserReaction): void => {
-    // console.log(JSON.stringify(userReaction));
+  private createDeleteReactionResponse = (userReaction: IUserReaction): void => {
+    console.log(JSON.stringify(userReaction));
   };
 }

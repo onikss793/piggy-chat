@@ -1,16 +1,17 @@
 import type { ObjectId } from 'mongoose';
 import { AlertDAO } from '../../dao';
-import { ISendBirdHandler } from '../../external';
+import type { ISendBirdHandler } from '../../external';
 import type { IAlert } from '../../model';
 import type { IMessageSend } from './interface';
 
-export const alertToTargetUser = async ({
+export const alertToTargetUser = ({
   actionType,
   parentUserId,
   targetUserId,
   groupChannelUrl,
   messageId,
-}: IMessageSend) => {
+}: Partial<IMessageSend>) => {
+  // alert 는 그냥 document 에 박아버리는 것 고민
   const data: IAlert = {
     alertTo: <unknown>targetUserId as ObjectId,
     action: actionType,
@@ -20,7 +21,8 @@ export const alertToTargetUser = async ({
     messageId,
     isViewed: false,
   };
-  await AlertDAO.saveAlert(data);
+
+  return AlertDAO.saveAlert(data);
 };
 
 export const alertUsersInThread = async (
@@ -31,12 +33,12 @@ export const alertUsersInThread = async (
     groupChannelUrl,
     messageId,
     parentMessageId,
-    ts
-  }: IMessageSend,
+    ts,
+  }: Omit<IMessageSend, 'mentionedUsers'>,
   sendbirdHandler: ISendBirdHandler,
-): Promise<void> => {
+) => {
   const { messages: threadedMessages } = await sendbirdHandler.getThreadedMessages(parentMessageId, ts, groupChannelUrl);
-  const usersInThread = threadedMessages
+  const data = threadedMessages
     .map(msg => msg.user.user_id)
     .map(userId => {
       return {
@@ -49,5 +51,20 @@ export const alertUsersInThread = async (
         isViewed: false,
       };
     });
-  await AlertDAO.saveAlerts(usersInThread);
+  return AlertDAO.saveAlerts(data);
+};
+
+export const alertToMentionedUsers = (messageSend: IMessageSend) => {
+  const data = messageSend.mentionedUsers.map<IAlert>(user => {
+    return {
+      alertTo: <unknown>user.user_id as ObjectId,
+      action: messageSend.actionType,
+      from: <unknown>messageSend.parentUserId as ObjectId,
+      to: <unknown>messageSend.targetUserId as ObjectId,
+      groupChannelUrl: messageSend.groupChannelUrl,
+      messageId: messageSend.messageId,
+      isViewed: false,
+    };
+  });
+  return AlertDAO.saveAlerts(data);
 };

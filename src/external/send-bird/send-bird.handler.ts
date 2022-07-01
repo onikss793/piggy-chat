@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { BinaryLike, createHmac } from 'crypto';
-import type { ICustomData, IMessage, IMessageListResponse, ISendBirdHandler } from './interface';
-import { IThreadedMessageResponse, WebhookCategory } from './interface';
+import type {
+  CustomData,
+  ISendBirdHandler,
+  Message,
+  MessageListResponse,
+  ThreadedMessageResponse,
+  WebhookCategory,
+} from './interface';
 
 @Injectable()
 export class SendBirdHandler implements ISendBirdHandler {
@@ -21,14 +27,14 @@ export class SendBirdHandler implements ISendBirdHandler {
     messageTs: number,
     channelUrl: string,
     channelType = 'group_channels',
-  ): Promise<IThreadedMessageResponse> {
+  ): Promise<ThreadedMessageResponse> {
     try {
       const url = `${this.URL}/${channelType}/${channelUrl}/messages/`;
       const params = {
         parent_message_id: parentMessageId,
         message_ts: messageTs,
       };
-      const { data } = await axios.get<IThreadedMessageResponse>(url, { params });
+      const { data } = await axios.get<ThreadedMessageResponse>(url, { params });
       console.info(JSON.stringify(data) + 'GetThreadedMessages');
       return data;
     } catch (e) {
@@ -36,10 +42,10 @@ export class SendBirdHandler implements ISendBirdHandler {
     }
   }
 
-  async getMessageList(channelUrl: string, messageTs: number, channelType = 'group_channels'): Promise<IMessageListResponse> {
+  async getMessageList(channelUrl: string, messageTs: number, channelType = 'group_channels'): Promise<MessageListResponse> {
     try {
       const url = `${this.URL}/${channelType}/${channelUrl}/messages`;
-      const { data } = await axios.get<IMessageListResponse>(url, {
+      const { data } = await axios.get<MessageListResponse>(url, {
         params: {
           message_ts: messageTs,
         },
@@ -59,20 +65,20 @@ export class SendBirdHandler implements ISendBirdHandler {
   classifyWebhook(category: string): WebhookCategory {
     switch (category) {
       case 'group_channel:reaction_add':
-        return WebhookCategory.REACTION_ADD;
+        return 'REACTION_ADD';
       case 'group_channel:message_send':
-        return WebhookCategory.MESSAGE_SEND;
+        return 'MESSAGE_SEND';
     }
   }
 
-  parseCustomData(data: string): ICustomData {
-    return JSON.parse(data) as ICustomData;
+  parseCustomData(data: string): CustomData {
+    return JSON.parse(data) as CustomData;
   }
 }
 
 export class MockSendBirdHandler implements ISendBirdHandler {
-  getMessageList(): Promise<IMessageListResponse> {
-    const mock: IMessage = {
+  getMessageList(): Promise<MessageListResponse> {
+    const mock: Message = {
       message_id: 1,
       type: null,
       custom_type: null,
@@ -129,17 +135,16 @@ export class MockSendBirdHandler implements ISendBirdHandler {
       ],
     });
   }
-  verifyWebhook(body: BinaryLike, signature: string): boolean {
+  verifyWebhook(): boolean {
     return false;
   }
-  classifyWebhook(category: string): WebhookCategory {
+  classifyWebhook(): WebhookCategory {
     return undefined;
   }
-  parseCustomData(data: string): ICustomData {
+  parseCustomData(): CustomData {
     return undefined;
   }
-  getThreadedMessages(parentMessageId: number, messageTs: number, channelUrl: string, channelType?: string): Promise<IThreadedMessageResponse> {
+  getThreadedMessages(): Promise<ThreadedMessageResponse> {
     return Promise.resolve(undefined);
   }
-
 }

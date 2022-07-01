@@ -1,6 +1,6 @@
-import { ReactionType } from '../../model';
+import type { ReactionType } from '../../model';
 
-export interface IAddReactionDTO {
+export type AddReactionResponse = {
   userId: string;
   reactions: {
     messageId: number,
@@ -8,7 +8,7 @@ export interface IAddReactionDTO {
   }[];
 }
 
-export interface IBestChatDTO {
+export type BestChatResponse = {
   messageId: number;
   likeCount: number;
   groupChannelId: string;

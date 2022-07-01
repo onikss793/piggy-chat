@@ -1,8 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ObjectId } from 'mongoose';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { ObjectId } from 'mongoose';
 import { UserDAO } from '../../dao';
-import { IUser } from '../../model';
-import { IUserDTO } from './interface';
+import type { IUser } from '../../model';
+import type { UserResponse } from './interface';
 
 @Injectable()
 export class UserService {
@@ -10,19 +10,19 @@ export class UserService {
     return UserDAO.isNicknameUnique(nickname);
   }
 
-  async updateUserNickname(userId: ObjectId, nickname: string): Promise<IUserDTO> {
+  async updateUserNickname(userId: ObjectId, nickname: string): Promise<UserResponse> {
     const updatedUser = await UserDAO.updateUserInfo(userId, { nickname });
-    return this.createUserDTO(updatedUser);
+    return this.createUserResponse(updatedUser);
   }
 
-  private createUserDTO = (user: IUser): IUserDTO => {
+  private createUserResponse = (user: IUser): UserResponse => {
     if (!user) {
-      throw new InternalServerErrorException('No user to make DTO');
+      throw new NotFoundException('No user to make UserResponse');
     }
 
     return {
       id: user.id,
-      nickname: user.nickname
+      nickname: user.nickname,
     };
   };
 }

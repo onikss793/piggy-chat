@@ -1,7 +1,8 @@
-import { JwtPayload } from 'jsonwebtoken';
-import { ObjectId } from 'mongoose';
+import type { JwtPayload } from 'jsonwebtoken';
+import type { ObjectId } from 'mongoose';
+import type { IUser } from '../../model';
 
-export interface ILoginDTO {
+export type LoginResponse = {
   id: ObjectId;
   accessToken: string;
   refreshToken: string;
@@ -23,4 +24,16 @@ export type IdentityTokenPayload = JwtPayload & {
   email_verified: boolean;
   is_private_email: string;
   auth_time: number;
+}
+
+export type CreateOrGetUserOption = {
+  user: IUser;
+  created: boolean;
+}
+
+export type CreateLoginResponseDTO = {
+  user: IUser;
+  accessToken: string;
+  refreshToken: string;
+  isSignedUpUser: boolean;
 }

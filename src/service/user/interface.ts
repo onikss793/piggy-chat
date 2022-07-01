@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongoose';
 
-export interface IUserDTO {
+export type UserResponse = {
   id: ObjectId;
   nickname: string;
 }

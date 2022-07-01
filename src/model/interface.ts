@@ -21,7 +21,9 @@ export interface IUser extends IBaseEntity {
   currentUserGroupChannelUrl?: string;
 }
 
-export enum OauthKind {
+export type OauthKind = keyof typeof OauthKindEnum;
+
+export enum OauthKindEnum {
   KAKAO = 'KAKAO',
   APPLE = 'APPLE',
 }
@@ -43,7 +45,9 @@ export interface IAlert extends IBaseEntity {
   isViewed: boolean;
 }
 
-export enum ReactionType {
+export type ReactionType = keyof typeof ReactionTypeEnum;
+
+export enum ReactionTypeEnum {
   LIKE = 'LIKE'
 }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { IUser } from '../../model';
-import { AccessTokenPayload, IJWTHandler, RefreshTokenPayload } from './interface';
+import type { IUser } from '../../model';
+import type { AccessTokenPayload, IJWTHandler, RefreshTokenPayload } from './interface';
 
 @Injectable()
 export class JWTHandler implements IJWTHandler {

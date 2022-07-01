@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
 import { ScrapDAO } from '../../dao';
-import { IScrap, IUser } from '../../model';
-import { IScrapDataDTO, IScrapDTO } from './interface';
+import type { IScrap, IUser } from '../../model';
+import type { IScrapDataDTO, ScrapResponse } from './interface';
 
 @Injectable()
 export class ScrapService {
   async getScraps(userId: ObjectId) {
-    return (await ScrapDAO.getUserScrap(userId)).map(scrap => this.createScrapDTO(scrap));
+    return (await ScrapDAO.getUserScrap(userId)).map(scrap => this.createScrapResponse(scrap));
   }
 
   async scrap(scrapDataDTO: IScrapDataDTO): Promise<void> {
@@ -24,7 +24,7 @@ export class ScrapService {
     };
   };
 
-  private createScrapDTO = (scrap: IScrap): IScrapDTO => ({
+  private createScrapResponse = (scrap: IScrap): ScrapResponse => ({
     user: {
       id: (<IUser>scrap.user).id,
       nickname: (<IUser>scrap.user).nickname,

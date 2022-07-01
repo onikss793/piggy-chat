@@ -1,11 +1,17 @@
 import { TokenExpiredError } from 'jsonwebtoken';
 import { mongo } from 'mongoose';
 import { sessionTeardown, userSetup, userTeardown } from '../../../test-utils';
-import { IAppleHandler, IKakaoHandler, MockAppleHandler, MockKakaoHandler } from '../../external';
-import { IJWTHandler, JWTHandler } from '../../external/jsonwebtoken';
+import {
+  IAppleHandler,
+  IJWTHandler,
+  IKakaoHandler,
+  JWTHandler,
+  MockAppleHandler,
+  MockKakaoHandler,
+} from '../../external';
 import { connectToMongoDB, models } from '../../mongo';
 import { AuthService } from './auth.service';
-import { IAppleLoginDTO, IKakaoLoginDTO } from './interface';
+import type { IAppleLoginDTO, IKakaoLoginDTO } from './interface';
 
 let mongoose: typeof import('mongoose');
 

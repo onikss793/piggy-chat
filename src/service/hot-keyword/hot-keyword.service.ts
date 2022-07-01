@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HotKeywordDAO } from '../../dao';
-import { IHotKeyword } from '../../model';
-import { ICreateHotKeywordDTO, IHotKeywordDTO } from './interface';
+import type { IHotKeyword } from '../../model';
+import type { HotKeywordResponse, ICreateHotKeywordDTO } from './interface';
 
 @Injectable()
 export class HotKeywordService {
@@ -14,14 +14,14 @@ export class HotKeywordService {
     };
     const hotKeyword = await HotKeywordDAO.createHotKeyword(hotKeywordData);
 
-    return this.createHotKeywordDTO(hotKeyword);
+    return this.createHotKeywordResponse(hotKeyword);
   }
 
-  async getHotKeywords(from = new Date(), to = new Date()): Promise<IHotKeywordDTO[]> {
-    return (await HotKeywordDAO.getHotKeywordsFromTo(from, to)).map(hk => this.createHotKeywordDTO(hk));
+  async getHotKeywords(from = new Date(), to = new Date()): Promise<HotKeywordResponse[]> {
+    return (await HotKeywordDAO.getHotKeywordsFromTo(from, to)).map(hk => this.createHotKeywordResponse(hk));
   }
 
-  private createHotKeywordDTO = (hotKeyword: IHotKeyword): IHotKeywordDTO => ({
+  private createHotKeywordResponse = (hotKeyword: IHotKeyword): HotKeywordResponse => ({
     groupChannelUrl: hotKeyword.groupChannelUrl,
     words: hotKeyword.words,
     from: hotKeyword.from.toISOString(),

@@ -17,6 +17,7 @@ export class AppleHandler implements IAppleHandler {
 
   async getJWKS(): Promise<AppleJWKS[]> {
     const { data } = await axios.get<{ keys: AppleJWKS[] }>(this.jwksUri);
+    console.log(data, 'getJWKS');
     return data.keys;
   }
 
@@ -27,6 +28,7 @@ export class AppleHandler implements IAppleHandler {
   getJWTPayload(identityToken: string): jwt.Jwt {
     const payload = jwt.decode(identityToken, { complete: true });
     if (!payload?.header) throw new UnauthorizedException('Not a valid identity_token');
+    console.log(payload, 'getJWTPayload');
     return payload;
   }
 

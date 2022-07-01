@@ -11,7 +11,7 @@ export class UserGuard implements CanActivate {
     try {
       const req: Request & { userId: ObjectId } = context.switchToHttp().getRequest();
 
-      if (process.env.NODE_ENV === 'local' || undefined) {
+      if (process.env.STAGE === 'local' || undefined) {
         req.userId = (await this.getUserIfLocal()).id;
         return true;
       }
@@ -23,8 +23,7 @@ export class UserGuard implements CanActivate {
       if (!token) throw new Error('No Bearer token');
 
       const payload = jwt.verify(token, process.env.JWT_SECRET ?? 'secret') as { userId: ObjectId };
-
-      if (!payload.userId) throw new Error('No userId in payload');
+      if (!payload?.userId) throw new Error('No userId in payload');
 
       req.userId = payload.userId;
 

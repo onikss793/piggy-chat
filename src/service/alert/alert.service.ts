@@ -1,58 +1,43 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { isEmpty, isNil } from 'ramda';
 import type { ISendBirdHandler } from '../../external';
 import { Symbols } from '../../symbols';
-import { IMessageSend } from './interface';
+import { alertToMentionedUsers, alertToTargetUser, alertUsersInThread } from './functions';
+import type { IMessageSend } from './interface';
 
 @Injectable()
 export class AlertService {
   constructor(@Inject(Symbols.ISendBirdHandler) private readonly sendbirdHandler: ISendBirdHandler) {}
 
-  async messageSend({
-    actionType,
-    parentUserId,
-    targetUserId,
-    groupChannelUrl,
-    messageId,
-    parentMessageId,
-    ts,
-  }: IMessageSend) {
-    //  TODO
-    // 멘션 시 알림
-    // - ***님이 답글을 남겼습니다 : 원문
+  /**
+   * 메시지 발송 시 알림 처리
+   * @returns {Promise<void>}
+   * @param data
+   */
+  async messageSend(data: IMessageSend): Promise<void> {
+    const tasks = [];
+    const assign = <F>(fun: F) => tasks.push(fun);
 
-    // cond<IMessageSend>([
-    //   [() => !isNil(parentMessageId), alertUsersInThread({
-    //     actionType,
-    //     parentMessageId,
-    //     targetUserId,
-    //     parentUserId,
-    //     groupChannelUrl,
-    //     messageId,
-    //   }, this.sendbirdHandler)],
-    // ]);
-    //
-    // const saveAlertsInThread = when(
-    //   (data: IMessageSend) => !isNil(data.parentMessageId),
-    //   alertUsersInThread,
-    //   ({ actionType, parentMessageId, targetUserId, parentUserId, groupChannelUrl, messageId }, this.sendbirdHandler)
-    // );
+    assign(alertToTargetUser({ ...data }));
+    !isNil(data.parentMessageId) && assign(alertUsersInThread({ ...data }, this.sendbirdHandler));
+    !isEmpty(data.mentionedUsers) && assign(alertToMentionedUsers({ ...data }));
 
-    // await Promise.all([alertToTargetUser, saveAlertsInThread]);
+    await Promise.allSettled(tasks);
   }
 
-  reactionAdd() {
-    return;
-  }
-
-  userMentioned() {
-    return;
-  }
-
-  bestChatUpdated() {
-    return;
-  }
-
-  hotKeywordUpdated() {
-    return;
-  }
+  // reactionAdd() {
+  //   return;
+  // }
+  //
+  // userMentioned() {
+  //   return;
+  // }
+  //
+  // bestChatUpdated() {
+  //   return;
+  // }
+  //
+  // hotKeywordUpdated() {
+  //   return;
+  // }
 }

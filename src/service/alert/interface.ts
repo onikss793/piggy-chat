@@ -1,4 +1,4 @@
-import { AlertActionType } from '../../external/send-bird';
+import { AlertActionType, Member } from '../../external';
 
 export interface IMessageSend {
   actionType: AlertActionType;
@@ -8,4 +8,5 @@ export interface IMessageSend {
   groupChannelUrl: string;
   messageId: number;
   ts: number;
+  mentionedUsers: Member[];
 }

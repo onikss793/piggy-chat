@@ -5,7 +5,7 @@ export interface ICreateHotKeywordDTO {
   to?: Date;
 }
 
-export interface IHotKeywordDTO {
+export type HotKeywordResponse = {
   groupChannelUrl: string;
   words: string[];
   from: string;

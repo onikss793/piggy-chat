@@ -1,5 +1,5 @@
 import { model, Model, Schema } from 'mongoose';
-import { IUserReaction } from './interface';
+import type { IUserReaction } from './interface';
 import { makeSchema } from './makeSchema';
 
 const { String, ObjectId, Number } = Schema.Types;

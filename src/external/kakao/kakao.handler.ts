@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { IKakaoHandler, KakaoUserInfo } from './interface';
+import type { IKakaoHandler, KakaoUserInfo } from './interface';
 
 @Injectable()
 export class KakaoHandler implements IKakaoHandler {
@@ -15,7 +15,13 @@ export class KakaoHandler implements IKakaoHandler {
       },
     });
     console.log(response, 'getUserInfoByAccessToken');
-    return response.data;
+    return {
+      ...response.data,
+      kakao_account: {
+        ...response.data.kakao_account,
+        email: response.data.kakao_account.email ?? accessToken.slice(0, 10),
+      },
+    };
   }
 }
 

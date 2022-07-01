@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongoose';
-import { IUserDTO } from '../user';
+import { UserResponse } from '../user';
 
 export interface IScrapDataDTO {
   userId: ObjectId;
@@ -8,8 +8,8 @@ export interface IScrapDataDTO {
   messageId: number;
 }
 
-export interface IScrapDTO {
-  user: ObjectId | IUserDTO;
+export interface ScrapResponse {
+  user: ObjectId | UserResponse;
   groupChannelUrl: string;
   messageId: number;
 }

@@ -25,14 +25,21 @@ export function MongoModels(): IMongoModels {
 }
 
 export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
+  const uri = getMongoURI();
+
+  return connect(uri);
+}
+
+function getMongoURI(): string {
   const username = process.env.MONGO_USERNAME;
   const password = encodeURIComponent(process.env.MONGO_PASSWORD);
   const cluster = process.env.MONGO_CLUSTER;
-  const uri = ['local', 'nest'].includes(process.env.STAGE)
-    ? 'mongodb://127.0.0.1:27017/piggy_chat'
-    : `mongodb+srv://${username}:${password}@${cluster}.x82dl.mongodb.net/?retryWrites=true&w=majority`;
 
-  return connect(uri);
+  if (process.env.STAGE === 'development') {
+    return `mongodb+srv://${username}:${password}@${cluster}.x82dl.mongodb.net/piggy_chat?retryWrites=true&w=majority`;
+  }
+
+  return 'mongodb://127.0.0.1:27017/piggy_chat';
 }
 
 export interface IMongoModels {

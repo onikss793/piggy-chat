@@ -1,9 +1,13 @@
 import { Controller, Inject, Post, Req, UnauthorizedException } from '@nestjs/common';
 import type { Request } from 'express';
 import type { ObjectId } from 'mongoose';
-import type { IMessageWebhook, ISendBirdHandler } from '../../external/send-bird';
-import { AlertActionType, IReactionWebhook, WebhookCategory, WebhookResponse } from '../../external/send-bird';
-import { ReactionType } from '../../model';
+import type {
+  ISendBirdHandler,
+  MessageWebhook,
+  ReactionWebhook,
+  WebhookCategory,
+  WebhookResponse,
+} from '../../external';
 import { AlertService } from '../../service/alert';
 import { ReactionService } from '../../service/reaction';
 import { Symbols } from '../../symbols';
@@ -34,40 +38,41 @@ export class ExternalController {
 
   private handleData(category: WebhookCategory, data: WebhookResponse) {
     switch (category) {
-      case WebhookCategory.REACTION_ADD: {
-        const { user, message, channel } = data as IReactionWebhook;
+      case 'REACTION_ADD': {
+        const { user, message, channel } = data as ReactionWebhook;
 
         return this.reactionService.addReaction(
           <unknown>(user.user_id) as ObjectId,
           message.message_id,
-          ReactionType.LIKE,
+          'LIKE',
           channel.channel_url,
         );
       }
 
-      case WebhookCategory.REACTION_DELETE: {
-        const { user, message, channel } = data as IReactionWebhook;
+      case 'REACTION_DELETE': {
+        const { user, message, channel } = data as ReactionWebhook;
 
         return this.reactionService.deleteReaction(
           <unknown>user.user_id as ObjectId,
           message.message_id,
-          ReactionType.LIKE,
+          'LIKE',
           channel.channel_url,
         );
       }
 
-      case WebhookCategory.MESSAGE_SEND: {
-        const { sender, payload, channel } = data as IMessageWebhook;
+      case 'MESSAGE_SEND': {
+        const { sender, payload, channel, mentioned_users: mentionedUsers } = data as MessageWebhook;
         const { parentUserId: targetUserId, parentMessageId } = this.sendBirdHandler.parseCustomData(payload.data);
 
         return this.alertService.messageSend({
-          actionType: AlertActionType.REPLY,
+          actionType: 'REPLY',
           parentUserId: sender.user_id,
           parentMessageId,
           targetUserId,
           groupChannelUrl: channel.channel_url,
           messageId: payload.message_id,
-          ts: payload.created_at
+          ts: payload.created_at,
+          mentionedUsers,
         });
       }
     }

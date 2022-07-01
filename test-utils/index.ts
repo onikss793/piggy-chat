@@ -1,17 +1,17 @@
 import * as dayjs from 'dayjs';
-import { ObjectId } from 'mongoose';
-import { IHotKeyword, IReactionStatistics, IScrap, IUser, IUserReaction } from '../src/model';
+import type { ObjectId } from 'mongoose';
+import type { IScrap } from '../src/model';
 import { models } from '../src/mongo';
 
 export async function sessionTeardown(): Promise<void> {
   await models.Session.deleteMany();
 }
 
-export async function userSetup(nickname = 'nickname'): Promise<IUser> {
+export async function userSetup(nickname = 'nickname', account = 'account', oauthKind = 'APPLE') {
   await userTeardown();
   return (await models.User.create({
-    account: 'account',
-    oauthKind: 'APPLE',
+    account,
+    oauthKind,
     nickname,
   })).save();
 }
@@ -33,7 +33,7 @@ export async function scrapTeardown(): Promise<void> {
   await models.Scrap.deleteMany();
 }
 
-export async function hotKeywordSetup(): Promise<IHotKeyword> {
+export async function hotKeywordSetup() {
   await hotKeywordTeardown();
   return (await models.HotKeyword.create({
     groupChannelUrl: 'GROUP_CHANNEL_URL',
@@ -47,7 +47,7 @@ export async function hotKeywordTeardown(): Promise<void> {
   await models.HotKeyword.deleteMany();
 }
 
-export async function userReactionSetup(userId: ObjectId): Promise<IUserReaction> {
+export async function userReactionSetup(userId: ObjectId) {
   await userReactionTeardown();
   return (await models.UserReaction.create({
     user: userId,
@@ -63,7 +63,7 @@ export async function userReactionTeardown(): Promise<void> {
   await models.UserReaction.deleteMany();
 }
 
-export async function reactionStatsSetup(groupChannelId: string, messageId: number, reactionType: string, totalCount = 1): Promise<IReactionStatistics> {
+export async function reactionStatsSetup(groupChannelId: string, messageId: number, reactionType: string, totalCount = 1) {
   await reactionStatsTeardown();
   return (await models.ReactionStatistics.create({
     groupChannelId,
@@ -75,4 +75,8 @@ export async function reactionStatsSetup(groupChannelId: string, messageId: numb
 
 export async function reactionStatsTeardown(): Promise<void> {
   await models.ReactionStatistics.deleteMany();
+}
+
+export async function alertTeardown() {
+  await models.Alert.deleteMany();
 }

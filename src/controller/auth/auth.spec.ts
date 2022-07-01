@@ -4,7 +4,7 @@ import { sessionTeardown, userSetup } from '../../../test-utils';
 import { IAppleHandler, IKakaoHandler, MockAppleHandler, MockKakaoHandler } from '../../external';
 import { IJWTHandler, JWTHandler } from '../../external/jsonwebtoken';
 import { connectToMongoDB } from '../../mongo';
-import { AuthService, ILoginDTO } from '../../service';
+import { AuthService, LoginResponse } from '../../service';
 import { log } from '../../util';
 import { AuthController } from './auth.controller';
 
@@ -45,7 +45,7 @@ describe('Auth Controller Test', () => {
     } as unknown as Request;
     const loginDTO = await authController.login(req);
     log(loginDTO);
-    expect(loginDTO).toEqual<ILoginDTO>({
+    expect(loginDTO).toEqual<LoginResponse>({
       id: expect.any(String),
       accessToken: expect.any(String),
       refreshToken: expect.any(String),

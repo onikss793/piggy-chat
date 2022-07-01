@@ -1,37 +1,39 @@
-import { BinaryLike } from 'crypto';
-import { ReactionType } from '../../model';
+import type { BinaryLike } from 'crypto';
+import type { ReactionType } from '../../model';
 
 export interface ISendBirdHandler {
-  getMessageList(channelUrl: string, messageTs: number, channelType?: string): Promise<IMessageListResponse>;
+  getMessageList(channelUrl: string, messageTs: number, channelType?: string): Promise<MessageListResponse>;
   getThreadedMessages(
     parentMessageId: number,
     messageTs: number,
     channelUrl: string,
     channelType?: string,
-  ): Promise<IThreadedMessageResponse>;
+  ): Promise<ThreadedMessageResponse>;
   verifyWebhook(body: BinaryLike, signature: string): boolean;
   classifyWebhook(category: string): WebhookCategory;
-  parseCustomData(data: string): ICustomData;
+  parseCustomData(data: string): CustomData;
 }
 
-export interface ICustomData {
+export type CustomData = {
   parentUserId: string;
   parentMessageId: number;
 }
 
-export enum WebhookCategory {
+export type WebhookCategory = keyof typeof WebhookCategoryEnum;
+
+export enum WebhookCategoryEnum {
   REACTION_ADD = 'REACTION_ADD',
   REACTION_DELETE = 'REACTION_DELETE',
   MESSAGE_SEND = 'MESSAGE_SEND',
 }
 
-export type WebhookResponse = IReactionWebhook | IMessageWebhook;
+export type WebhookResponse = ReactionWebhook | MessageWebhook;
 
-export interface IMessageListResponse {
-  messages: IMessage[];
+export type MessageListResponse = {
+  messages: Message[];
 }
 
-export interface IMessage {
+export type Message = {
   message_id: number;
   type: string;
   custom_type: string;
@@ -81,7 +83,7 @@ export interface IMessage {
   file: unknown;
 }
 
-export interface IReactionWebhook {
+export type ReactionWebhook = {
   category: WebhookCategory;
   reaction: ReactionType;
   app_id: string;
@@ -92,8 +94,8 @@ export interface IReactionWebhook {
     profile_url: string;
   },
   message: {
-    sender_id: string;
-    message_id: string;
+    sender_id: number;
+    message_id: number;
   },
   channel: {
     is_distinct: boolean;
@@ -108,7 +110,27 @@ export interface IReactionWebhook {
   }
 }
 
-export interface IMessageWebhook {
+export type Member = {
+  user_id: string;
+  nickname: string;
+  profile_url: string;
+  is_active: boolean;
+  is_online: boolean;
+  is_hidden: number;
+  state: 'joined' | 'invited';
+  is_blocking_sender: boolean;
+  is_blocked_by_sender: boolean;
+  unread_message_count: number;
+  total_unread_message_count: number;
+  channel_unread_message_count: number;
+  channel_mention_count: number;
+  push_enabled: boolean;
+  push_trigger_option: string; // "default"
+  do_not_disturb: boolean;
+  metadata: Record<string, unknown>;
+}
+
+export type MessageWebhook = {
   category: string;
   sender: {
     user_id: string;
@@ -120,26 +142,8 @@ export interface IMessageWebhook {
   sender_ip_addr: string;
   custom_type: string;
   mention_type: string;
-  mentioned_users: [];
-  members: {
-    user_id: string;
-    nickname: string;
-    profile_url: string;
-    is_active: boolean;
-    is_online: boolean;
-    is_hidden: number;
-    state: 'joined' | 'invited';
-    is_blocking_sender: boolean;
-    is_blocked_by_sender: boolean;
-    unread_message_count: number;
-    total_unread_message_count: number;
-    channel_unread_message_count: number;
-    channel_mention_count: number;
-    push_enabled: boolean;
-    push_trigger_option: string; // "default"
-    do_not_disturb: boolean;
-    metadata: Record<string, unknown>;
-  }[];
+  mentioned_users: Member[];
+  members: Member[];
   type: 'MESG';
   payload: {
     message_id: number;
@@ -167,7 +171,7 @@ export interface IMessageWebhook {
   app_id: string;
 }
 
-export interface IThreadedMessageResponse {
+export type ThreadedMessageResponse = {
   messages: {
     message_id: number;
     type: 'MESG';
@@ -193,6 +197,8 @@ export interface IThreadedMessageResponse {
   }[];
 }
 
-export enum AlertActionType {
+export type AlertActionType = keyof typeof AlertActionTypeEnum;
+
+export enum AlertActionTypeEnum {
   REPLY = 'REPLY',
 }

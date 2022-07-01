@@ -1,4 +1,4 @@
-export interface KakaoUserInfo {
+export type KakaoUserInfo = {
   kakao_account: {
     email: string;
     profile: {
