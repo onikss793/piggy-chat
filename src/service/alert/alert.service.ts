@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { isEmpty, isNil } from 'ramda';
 import type { ISendBirdHandler } from '../../external';
 import { Symbols } from '../../symbols';
-import { alertToMentionedUsers, alertToTargetUser, alertUsersInThread } from './functions';
+import { alertToMentionedUsers, alertToParentUser, alertUsersInThread } from './functions';
 import type { IMessageSend } from './interface';
 
 @Injectable()
@@ -16,11 +16,19 @@ export class AlertService {
    */
   async messageSend(data: IMessageSend): Promise<void> {
     const tasks = [];
-    const assign = <F>(fun: F) => tasks.push(fun);
+    const assign = <F>(fun: F, condition = true) => condition ? tasks.push(fun) : null;
 
-    assign(alertToTargetUser({ ...data }));
-    !isNil(data.parentMessageId) && assign(alertUsersInThread({ ...data }, this.sendbirdHandler));
-    !isEmpty(data.mentionedUsers) && assign(alertToMentionedUsers({ ...data }));
+    assign(
+      alertToParentUser({ ...data }),
+    );
+    assign(
+      alertUsersInThread({ ...data }, this.sendbirdHandler),
+      !isNil(data.parentMessageId),
+    );
+    assign(
+      alertToMentionedUsers({ ...data }),
+      !isEmpty(data.mentionedUsers),
+    );
 
     await Promise.allSettled(tasks);
   }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { BinaryLike, createHmac } from 'crypto';
+import { cloneDeep } from 'lodash';
 import type {
   CustomData,
   ISendBirdHandler,
@@ -80,7 +81,7 @@ export class MockSendBirdHandler implements ISendBirdHandler {
   getMessageList(): Promise<MessageListResponse> {
     const mock: Message = {
       message_id: 1,
-      type: null,
+      type: 'MESG',
       custom_type: null,
       channel_url: null,
       user: {
@@ -144,7 +145,33 @@ export class MockSendBirdHandler implements ISendBirdHandler {
   parseCustomData(): CustomData {
     return undefined;
   }
-  getThreadedMessages(): Promise<ThreadedMessageResponse> {
-    return Promise.resolve(undefined);
+  getThreadedMessages(parentMessageId: number, ts: number, groupChannelUrl: string, userId: string): Promise<ThreadedMessageResponse> {
+    const mock: Pick<ThreadedMessageResponse, 'messages'> = {
+      messages: [{
+        message_id: 1,
+        type: 'MESG',
+        is_silent: false,
+        custom_type: '',
+        channel_url: groupChannelUrl,
+        user: {
+          user_id: userId,
+          nickname: '',
+          profile_url: '',
+          metadata: {},
+        },
+        mention_type: 'users',
+        mentioned_users: [],
+        is_removed: false,
+        message: '쓰레드에 안에 달린 테스트 메시지 입니다.',
+        translations: null,
+        data: '',
+        created_at: null,
+        updated_at: null,
+        file: null,
+        message_survival_seconds: null,
+      }],
+    };
+
+    return Promise.resolve(cloneDeep(mock));
   }
 }

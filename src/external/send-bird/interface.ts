@@ -130,23 +130,20 @@ export type Member = {
   metadata: Record<string, unknown>;
 }
 
+export type User = Pick<Member, 'user_id' | 'nickname' | 'profile_url' | 'metadata'>;
+
 export type MessageWebhook = {
   category: string;
-  sender: {
-    user_id: string;
-    nickname: string;
-    profile_url: string;
-    metadata: Record<string, unknown>;
-  },
+  sender: User, // 메시지를 보낸 사용자
   silent: boolean,
   sender_ip_addr: string;
   custom_type: string;
   mention_type: string;
-  mentioned_users: Member[];
+  mentioned_users: User[]; // 메시지에서 멘션된 사용자
   members: Member[];
   type: 'MESG';
   payload: {
-    message_id: number;
+    message_id: number; // 보내진 메시지 ID
     custom_type: string;
     message: string;
     translations: {
@@ -154,7 +151,7 @@ export type MessageWebhook = {
       de: string;
     };
     created_at: number;
-    data: string;
+    data: string; // 쓰레드 안에 있는 메시지라면 부모 사용자 ID 및 메시지 ID
   };
   channel: {
     name: string;
@@ -174,17 +171,12 @@ export type MessageWebhook = {
 export type ThreadedMessageResponse = {
   messages: {
     message_id: number;
-    type: 'MESG';
+    type: string;
     is_silent: boolean;
     custom_type: string;
     channel_url: string;
-    user: {
-      user_id: string;
-      nickname: string;
-      profile_url: string;
-      metadata: Record<string, unknown>;
-    };
-    mention_type: 'users';
+    user: User;
+    mention_type: string;
     mentioned_users: [];
     is_removed: boolean;
     message: string;

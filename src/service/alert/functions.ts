@@ -4,19 +4,19 @@ import type { ISendBirdHandler } from '../../external';
 import type { IAlert } from '../../model';
 import type { IMessageSend } from './interface';
 
-export const alertToTargetUser = ({
+export const alertToParentUser = ({
   actionType,
   parentUserId,
-  targetUserId,
+  senderId,
   groupChannelUrl,
   messageId,
 }: Partial<IMessageSend>) => {
   // alert 는 그냥 document 에 박아버리는 것 고민
   const data: IAlert = {
-    alertTo: <unknown>targetUserId as ObjectId,
+    alertTo: <unknown>parentUserId as ObjectId,
     action: actionType,
-    from: <unknown>parentUserId as ObjectId,
-    to: <unknown>targetUserId as ObjectId,
+    from: <unknown>senderId as ObjectId,
+    to: <unknown>parentUserId as ObjectId,
     groupChannelUrl,
     messageId,
     isViewed: false,
@@ -29,7 +29,7 @@ export const alertUsersInThread = async (
   {
     actionType,
     parentUserId,
-    targetUserId,
+    senderId,
     groupChannelUrl,
     messageId,
     parentMessageId,
@@ -44,8 +44,8 @@ export const alertUsersInThread = async (
       return {
         alertTo: <unknown>userId as ObjectId,
         action: actionType,
-        from: <unknown>parentUserId as ObjectId,
-        to: <unknown>targetUserId as ObjectId,
+        from: <unknown>senderId as ObjectId,
+        to: <unknown>parentUserId as ObjectId,
         groupChannelUrl,
         messageId,
         isViewed: false,
@@ -59,8 +59,8 @@ export const alertToMentionedUsers = (messageSend: IMessageSend) => {
     return {
       alertTo: <unknown>user.user_id as ObjectId,
       action: messageSend.actionType,
-      from: <unknown>messageSend.parentUserId as ObjectId,
-      to: <unknown>messageSend.targetUserId as ObjectId,
+      from: <unknown>messageSend.senderId as ObjectId,
+      to: <unknown>messageSend.parentUserId as ObjectId,
       groupChannelUrl: messageSend.groupChannelUrl,
       messageId: messageSend.messageId,
       isViewed: false,

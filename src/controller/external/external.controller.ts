@@ -62,13 +62,13 @@ export class ExternalController {
 
       case 'MESSAGE_SEND': {
         const { sender, payload, channel, mentioned_users: mentionedUsers } = data as MessageWebhook;
-        const { parentUserId: targetUserId, parentMessageId } = this.sendBirdHandler.parseCustomData(payload.data);
+        const { parentUserId, parentMessageId } = this.sendBirdHandler.parseCustomData(payload.data);
 
         return this.alertService.messageSend({
           actionType: 'REPLY',
-          parentUserId: sender.user_id,
-          parentMessageId,
-          targetUserId,
+          parentUserId, // 쓰레드 메시지 부모 userId
+          parentMessageId, // 쓰레드 메시지 부모 messageId
+          senderId: sender.user_id, // 메시지 보낸 사람
           groupChannelUrl: channel.channel_url,
           messageId: payload.message_id,
           ts: payload.created_at,

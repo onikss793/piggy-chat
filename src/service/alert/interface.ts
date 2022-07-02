@@ -1,12 +1,12 @@
-import { AlertActionType, Member } from '../../external';
+import { AlertActionType, User } from '../../external';
 
 export interface IMessageSend {
   actionType: AlertActionType;
   parentUserId: string;
   parentMessageId: number;
-  targetUserId: string;
+  senderId: string;
   groupChannelUrl: string;
   messageId: number;
   ts: number;
-  mentionedUsers: Member[];
+  mentionedUsers: User[];
 }

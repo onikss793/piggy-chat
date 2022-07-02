@@ -26,7 +26,7 @@ export function MongoModels(): IMongoModels {
 
 export async function connectToMongoDB(): Promise<typeof import('mongoose')> {
   const uri = getMongoURI();
-
+  console.log('MONGO_URI: ', uri);
   return connect(uri);
 }
 
