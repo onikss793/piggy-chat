@@ -34,7 +34,6 @@ export class AuthController {
     return this.authService.login(accessToken, refreshToken);
   }
 
-  // 사용자의 닉네임을 등록하는 API TODO: 닉네임 등록!
   @Post('/nickname')
   async isNicknameUnique(@Body('nickname') nickname: string): Promise<{ isUnique: boolean }> {
     const isUnique = await this.authService.isNicknameUnique(nickname);

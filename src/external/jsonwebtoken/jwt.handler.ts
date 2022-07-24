@@ -11,7 +11,7 @@ export class JWTHandler implements IJWTHandler {
 
   constructor() {
     this.secret = process.env.JWT_SECRET ?? 'secret';
-    this.accessTokenExpiry = '5m';
+    this.accessTokenExpiry = '1d';
     this.refreshTokenExpiry = '14d';
   }
 

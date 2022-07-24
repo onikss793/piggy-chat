@@ -19,7 +19,7 @@ export class KakaoHandler implements IKakaoHandler {
       ...response.data,
       kakao_account: {
         ...response.data.kakao_account,
-        email: response.data.kakao_account.email ?? accessToken.slice(0, 10),
+        email: response.data.kakao_account.email,
       },
     };
   }
